@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    # jdbc:h2:tcp://localhost/~/[db파일명.mv.db] 파일 저장경로
+    url: jdbc:h2:tcp://localhost/~/TimeIsGold
+    # h2 default username: sa
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+#        fetchType.LAZY일 때 batch사이즈
+        default_batch_fetch_size: 100
+
+logging:
+  level:
+    # jpa or hibernate가 보내는 sql을 로그로 출력
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
