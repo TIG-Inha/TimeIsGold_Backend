@@ -1,15 +1,20 @@
 package TimeIsGold.TimeIsGold.controller;
 
+import TimeIsGold.TimeIsGold.controller.apiResponse.ErrorResult;
+import TimeIsGold.TimeIsGold.controller.memberRegisterDto.MemberRegisterRequestDto;
+import TimeIsGold.TimeIsGold.controller.memberRegisterDto.MemberRegisterResponseDto;
+import TimeIsGold.TimeIsGold.controller.memberRegisterDto.UserIdCheckResponseDto;
 import TimeIsGold.TimeIsGold.domain.Member;
-import TimeIsGold.TimeIsGold.domain.Otp;
+import TimeIsGold.TimeIsGold.exception.memberRegister.MemberRegisterException;
 import TimeIsGold.TimeIsGold.repository.MemberRepository;
-import TimeIsGold.TimeIsGold.repository.OtpRepository;
+import TimeIsGold.TimeIsGold.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,4 +22,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberController {
 
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
+
+    //sign-up
+    @PostMapping("/register")
+    public ResponseEntity<MemberRegisterResponseDto> registerMember(@RequestBody @Valid MemberRegisterRequestDto request) {
+
+        MemberRegisterResponseDto dto = new MemberRegisterResponseDto();
+
+        //중복체크 했는지 확인
+        if (request.getDuplicatedIdCheck().equals("false")) {
+            throw new MemberRegisterException("ID중복확인안함");
+        }
+
+        //pw, pwCheck 같은지 확인
+        if (!request.pw.equals(request.pwCheck)) {
+            throw new MemberRegisterException("패스워드불일치");
+        }
+
+        //회원가입 진행
+        Member member = Member.createMember(request.getId(), request.getPw(), request.getName());
+        memberService.join(member);
+        dto.setHttpStatus(HttpStatus.OK);
+        dto.setMemberId(member.getId());
+
+        return new ResponseEntity<>(dto, dto.getHttpStatus());
+    }
+
+    @GetMapping("/register")
+    public ResponseEntity<UserIdCheckResponseDto> checkDuplicatedId(@RequestParam Long id) {
+        Optional<Member> optionalMember = memberRepository.findById(id);
+
+        UserIdCheckResponseDto dto = new UserIdCheckResponseDto();
+
+        if (optionalMember.isEmpty()) {
+            dto.setHttpStatus(HttpStatus.OK);
+            dto.setMessage("사용가능한 id");
+        } else {
+            // 중복된 id가 존재하는 경우 http status code를 뭘로 해야하는지? 403 Forbidden or 409 Conflict?
+            dto.setHttpStatus(HttpStatus.CONFLICT);
+            dto.setMessage("사용중인 id");
+        }
+        return new ResponseEntity<>(dto, dto.getHttpStatus());
+    }
 }
