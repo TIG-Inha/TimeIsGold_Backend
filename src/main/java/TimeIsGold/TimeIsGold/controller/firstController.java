@@ -15,7 +15,7 @@ public class firstController {
 
     @GetMapping("/first")
     public Map<String, Object> firstController(){
-        asdf
+
         return firstService.getFirstData();
     }
 
