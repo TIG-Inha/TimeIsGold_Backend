@@ -49,8 +49,8 @@ public class MemberController {
     }
 
     @GetMapping("/register")
-    public ResponseEntity<UserIdCheckResponseDto> checkDuplicatedId(@RequestParam Long id) {
-        Optional<Member> optionalMember = memberRepository.findById(id);
+    public ResponseEntity<UserIdCheckResponseDto> checkDuplicatedId(@RequestParam String userId) {
+        Optional<Member> optionalMember = memberRepository.findMemberByUserId(userId);
 
         UserIdCheckResponseDto dto = new UserIdCheckResponseDto();
 
