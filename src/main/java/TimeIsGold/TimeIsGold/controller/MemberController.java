@@ -3,6 +3,7 @@ package TimeIsGold.TimeIsGold.controller;
 import TimeIsGold.TimeIsGold.controller.apiResponse.ErrorResult;
 import TimeIsGold.TimeIsGold.controller.memberRegisterDto.*;
 import TimeIsGold.TimeIsGold.domain.Member;
+import TimeIsGold.TimeIsGold.exception.memberRegister.LoginException;
 import TimeIsGold.TimeIsGold.exception.memberRegister.MemberRegisterException;
 import TimeIsGold.TimeIsGold.repository.MemberRepository;
 import TimeIsGold.TimeIsGold.service.MemberService;
@@ -70,18 +71,20 @@ public class MemberController {
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request){
         LoginResponseDto dto = new LoginResponseDto();
 
-        dto.setHttpStatus(HttpStatus.CONFLICT);
-        dto.setMessage("id, pw 오류");
+        //dto.setHttpStatus(HttpStatus.CONFLICT);
+        //dto.setMessage("id, pw 오류");
 
-        memberService.login(request.getId(), request.getPw())
-                .ifPresent( m -> {
-                    dto.setHttpStatus(HttpStatus.OK);
-                    dto.setMessage("성공했습니다.");
-                });
+        Optional<Member> member=memberService.login(request.getId(), request.getPw());
 
-        //if()
+        if(member.isEmpty()){
+            throw new LoginException("id, pw 불일치");
+        }
+        else{
+            dto.setHttpStatus(HttpStatus.OK);
+            dto.setMessage("성공했습니다.");
+        }
+
         return new ResponseEntity<>(dto, dto.getHttpStatus());
-        //return member;
     }
 
 
