@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -14,8 +15,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByUserId(String userId);
 
-    Optional<Member> findMemberByUserId(String userId);
 
-    List<Member> findByUserIdAndPw(String userId, String pw);
+    Optional<Member> findMemberByUserId(String userId);
+    
+    Optional<Member> findByUserIdAndPw(String userId, String pw);
+
 
 }

@@ -42,4 +42,6 @@ public class Member {
         member.setName(name);
         return member;
     }
+
+
 }
