@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.controller;
 
 import TimeIsGold.TimeIsGold.controller.apiResponse.ErrorResult;
+import TimeIsGold.TimeIsGold.exception.memberRegister.LoginException;
 import TimeIsGold.TimeIsGold.exception.memberRegister.MemberRegisterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,13 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ErrorResult> memberRegisterExHandle(MemberRegisterException e) {
 
         ErrorResult errorResult = new ErrorResult("REGISTER-EX", e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ErrorResult> loginExHandle(LoginException e) {
+
+        ErrorResult errorResult = new ErrorResult("LOGIN-EX", e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 }

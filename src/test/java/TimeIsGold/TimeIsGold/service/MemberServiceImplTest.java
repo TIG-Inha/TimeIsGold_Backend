@@ -1,5 +1,6 @@
 package TimeIsGold.TimeIsGold.service;
 
+import TimeIsGold.TimeIsGold.controller.memberRegisterDto.LoginRequestDto;
 import TimeIsGold.TimeIsGold.domain.Member;
 import TimeIsGold.TimeIsGold.domain.Timetable;
 import TimeIsGold.TimeIsGold.repository.MemberRepository;
@@ -9,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,5 +50,18 @@ class MemberServiceImplTest {
         //then
     }
 
+    @Test
+    public void 로그인(){
+        Member member = Member.createMember("aaa","aaa","aaa");
+        Member member1 = Member.createMember("id1", "1234", "user1");
+        memberService.join(member);
+
+        LoginRequestDto request = new LoginRequestDto("aaa", "aaa");
+
+        Optional<Member> result = memberService.login(request.getId(), request.getPw());
+
+        System.out.println(result);
+
+    }
 
 }
