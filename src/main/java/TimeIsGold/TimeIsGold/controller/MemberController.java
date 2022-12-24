@@ -6,6 +6,7 @@ import TimeIsGold.TimeIsGold.domain.Member;
 import TimeIsGold.TimeIsGold.exception.memberRegister.LoginException;
 import TimeIsGold.TimeIsGold.exception.memberRegister.MemberRegisterException;
 import TimeIsGold.TimeIsGold.repository.MemberRepository;
+import TimeIsGold.TimeIsGold.repository.SessionConstants;
 import TimeIsGold.TimeIsGold.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +71,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request){
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request, HttpServletRequest hsRequest){
         LoginResponseDto dto = new LoginResponseDto();
 
         //dto.setHttpStatus(HttpStatus.CONFLICT);
@@ -80,6 +83,10 @@ public class MemberController {
             throw new LoginException("id, pw 불일치");
         }
         else{
+            HttpSession session = hsRequest.getSession();
+            session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
+            session.setMaxInactiveInterval(60);
+
             dto.setHttpStatus(HttpStatus.OK);
             dto.setMessage("성공했습니다.");
         }
@@ -87,5 +94,19 @@ public class MemberController {
         return new ResponseEntity<>(dto, dto.getHttpStatus());
     }
 
+    @GetMapping("/logout")
+    public ResponseEntity<LoginResponseDto> logout(HttpServletRequest HsRequest){
+        HttpSession session = HsRequest.getSession(false);
+        LoginResponseDto dto = new LoginResponseDto();
+
+        if(session!=null){
+            session.invalidate();
+        }
+
+        dto.setMessage("Session 삭제 완료");
+        dto.setHttpStatus(HttpStatus.OK);
+
+        return new ResponseEntity<>(dto, dto.getHttpStatus());
+    }
 
 }
