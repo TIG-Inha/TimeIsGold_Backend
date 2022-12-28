@@ -7,6 +7,11 @@ import TimeIsGold.TimeIsGold.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +21,19 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
 
-    @Autowired
+    @Mock
+    private MemberRepository memberRepository;
+
+    @InjectMocks
     private MemberService memberService;
-    @Autowired
-    private OtpService otpService;
 
     @Test
     public void 회원가입() throws Exception{
         //given
         Member member = Member.createMember("abc00", "1234", "user0");
-        member.setOtp(otpService.createOtp());
 
         //when
         Long joinMember = memberService.join(member);

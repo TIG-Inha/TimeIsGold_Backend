@@ -1,10 +1,11 @@
 package TimeIsGold.TimeIsGold.domain;
 
-import TimeIsGold.TimeIsGold.repository.MemberRepository;
+import TimeIsGold.TimeIsGold.domain.embeded.Otp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
@@ -22,8 +23,7 @@ public class Member {
 
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "otp_id")
+    @Embedded
     private Otp otp;
 
     @JsonIgnore
@@ -33,6 +33,12 @@ public class Member {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "timetable_id")
     private Timetable timetable;
+
+    // GroupMember 클래스 네이밍이 헛갈릴 여지 있을 거같음..
+    // 일단 단방향으로 설정하고 추후 양방향 관계 필요 시 수정
+
+//    @OneToMany(mappedBy = "member")
+//    private List<GroupMember> groupMembers = new ArrayList<>();
 
     public static Member createMember(String userId, String pw, String name) {
 
