@@ -19,38 +19,28 @@ public class Schedule {
     @Column(name = "schedule_id")
     private Long id;
 
+
     private String scheduleName;
 
-    private String startTime;
-
-    private String endTime;
+    private Integer time;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "timetable_id")
-    private Timetable timetable;
 
     public void setMember(Member member) {
         this.member = member;
         member.getSchedules().add(this);
     }
 
-    public void setTimetable(Timetable timetable) {
-        this.timetable = timetable;
-        timetable.getSchedules().add(this);
-    }
 
-    public static Schedule createSchedule(Member member, String name, String startTime, String endTime){
+    public static Schedule createSchedule(Member member, String name, Integer time){
         Schedule schedule = new Schedule();
 
         schedule.setMember(member);
         schedule.setScheduleName(name);
-        schedule.setStartTime(startTime);
-        schedule.setEndTime(endTime);
-        schedule.setTimetable(member.getTimetable());
+        schedule.setTime(time);
 
         return schedule;
     }
