@@ -8,6 +8,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @Transactional
+@ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -35,16 +41,16 @@ class MemberServiceImplTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
+    @InjectMocks
     private MemberService memberService;
-    @Autowired
-    private OtpService otpService;
 
+    @Mock
+    private MemberRepository memberRepository;
 
     @Test
     public void 회원가입() throws Exception{
         //given
         Member member = Member.createMember("abc00", "1234", "user0");
-        member.setOtp(otpService.createOtp());
 
         //when
         Long joinMember = memberService.join(member);

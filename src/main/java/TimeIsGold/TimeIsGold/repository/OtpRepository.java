@@ -1,6 +1,6 @@
 package TimeIsGold.TimeIsGold.repository;
 
-import TimeIsGold.TimeIsGold.domain.Otp;
+import TimeIsGold.TimeIsGold.domain.embeded.Otp;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
