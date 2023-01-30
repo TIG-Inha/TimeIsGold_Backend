@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.domain;
 
-import TimeIsGold.TimeIsGold.domain.embeded.TimetableForm;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
+import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
 import org.junit.jupiter.api.Test;
 
 class TimetableTest {

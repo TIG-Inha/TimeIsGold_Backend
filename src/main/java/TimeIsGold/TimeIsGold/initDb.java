@@ -1,5 +1,5 @@
 package TimeIsGold.TimeIsGold;
-import TimeIsGold.TimeIsGold.domain.Member;
+import TimeIsGold.TimeIsGold.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
