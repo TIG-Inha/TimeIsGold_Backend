@@ -10,12 +10,16 @@ import javax.persistence.EntityManager;
 @Component
 @RequiredArgsConstructor
 public class initDb {
+
     private final InitService initService;
+
 
     @PostConstruct
     public void init() {
         initService.dbInit1();
     }
+
+
 
     @Component
     @Transactional
@@ -31,10 +35,14 @@ public class initDb {
             em.persist(createMember(3));
         }
 
+
         private Member createMember(int n) {
             return Member.createMember("id" + n, "1234", "user" + n);
         }
 
+
     }
+
+
 
 }
