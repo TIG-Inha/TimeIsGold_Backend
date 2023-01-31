@@ -1,13 +1,6 @@
 package TimeIsGold.TimeIsGold.api;
 
 import lombok.Data;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Data
 public class ApiResponse<T> {
@@ -34,8 +27,8 @@ public class ApiResponse<T> {
     }
 
     // 예외 발생으로 API 호출 실패시 반환
-    public static ApiResponse<?> createError(String message) {
-        return new ApiResponse<>(ERROR_STATUS,  message,null);
+    public static <T> ApiResponse<T> createError(String message, T errors) {
+        return new ApiResponse<>(ERROR_STATUS, message, errors);
     }
 
     private ApiResponse(String status, String message,T data) {
