@@ -26,6 +26,7 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -49,7 +50,7 @@ public class MemberController {
         }
 
         //회원가입 진행
-        Member member = Member.createMember(request.getId(), request.getPw(), request.getName());
+        Member member = Member.create(request.getId(), request.getPw(), request.getName());
         memberService.join(member);
         dto.setHttpStatus(HttpStatus.OK);
         dto.setMemberId(member.getId());

@@ -37,7 +37,7 @@ public class initDb {
 
 
         private Member createMember(int n) {
-            return Member.createMember("id" + n, "1234", "user" + n);
+            return Member.create("id" + n, "1234", "user" + n);
         }
 
 
