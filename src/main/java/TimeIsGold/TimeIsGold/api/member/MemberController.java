@@ -26,6 +26,7 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;

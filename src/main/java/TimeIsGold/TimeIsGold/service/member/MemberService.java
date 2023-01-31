@@ -20,14 +20,8 @@ public class MemberService {
     @Transactional
     public Long join(Member member) {
 
-        //빈 시간표 생성해서 member에 넣어줌
-        TimetableForm timetableForm = TimetableForm.builder().build();
-
-        Timetable timetable = Timetable.createTimetable(timetableForm);
-        member.setTimetable(timetable);
         memberRepository.save(member);
         return member.getId();
-
     }
 
 //    public Member findMemberByOtpCode(String otpCode) {
