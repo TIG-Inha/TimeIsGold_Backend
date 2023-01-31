@@ -28,7 +28,7 @@ public class Member {
     @Embedded
     private Otp otp;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member")
     private List<Timetable> timetables = new ArrayList<>();
 
     // GroupMember 클래스 네이밍이 헛갈릴 여지 있을 거같음..

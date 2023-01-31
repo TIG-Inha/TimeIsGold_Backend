@@ -23,7 +23,7 @@ public class Timetable {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -34,6 +34,7 @@ public class Timetable {
 
         Timetable timetable = new Timetable();
         timetable.setName(name);
+        timetable.setMember(member);
 
         member.getTimetables().add(timetable);
 
@@ -42,5 +43,9 @@ public class Timetable {
 
     private void setName(String name) {
         this.name = name;
+    }
+
+    private void setMember(Member member) {
+        this.member = member;
     }
 }
