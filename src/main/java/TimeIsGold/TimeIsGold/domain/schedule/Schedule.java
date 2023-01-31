@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.domain.schedule;
 
 import TimeIsGold.TimeIsGold.domain.member.Member;
+import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule {
@@ -22,27 +22,37 @@ public class Schedule {
 
     private String scheduleName;
 
-    private Integer time;
+    private String startTime;
+
+    private String endTime;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "timetable_id")
+    private Timetable timetable;
 
 
-    public void setMember(Member member) {
-        this.member = member;
-        member.getSchedules().add(this);
-    }
-
-
-    public static Schedule createSchedule(Member member, String name, Integer time){
+    public static Schedule create(String name, String startTime, String endTime,
+                                          Timetable timetable){
         Schedule schedule = new Schedule();
 
-        schedule.setMember(member);
         schedule.setScheduleName(name);
-        schedule.setTime(time);
+        schedule.setStartTime(startTime);
+        schedule.setEndTime(endTime);
+
+        timetable.getSchedules().add(schedule);
 
         return schedule;
     }
 
+    private void setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+    }
+
+    private void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    private void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 }
