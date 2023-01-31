@@ -44,9 +44,7 @@ public class MemberService {
     }
 
 
-    public Optional<Member> login(String userId, String pw){
-
-
+    public Member login(String userId, String pw){
         return memberRepository.findByUserIdAndPw(userId,pw);
     }
 
