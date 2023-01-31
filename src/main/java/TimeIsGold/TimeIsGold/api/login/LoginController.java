@@ -33,9 +33,9 @@ public class LoginController {
         //dto.setHttpStatus(HttpStatus.CONFLICT);
         //dto.setMessage("id, pw 오류");
 
-        Optional<Member> member=loginService.login(request.getId(), request.getPw());
+        Member member=loginService.login(request.getId(), request.getPw());
 
-        if(member.isEmpty()){
+        if(member==null){
             throw new LoginException("id, pw 불일치");
         }
         else{
