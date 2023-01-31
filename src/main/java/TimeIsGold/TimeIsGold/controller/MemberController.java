@@ -55,11 +55,14 @@ public class MemberController {
 
     @GetMapping("/register")
     public ResponseEntity<UserIdCheckResponseDto> checkDuplicatedId(@RequestParam String userId) {
-        Optional<Member> optionalMember = memberRepository.findMemberByUserId(userId);
+
+
+        boolean isExistUserId = memberRepository.existsByUserId(userId);
+//        Optional<Member> optionalMember = memberRepository.findMemberByUserId(userId);
 
         UserIdCheckResponseDto dto = new UserIdCheckResponseDto();
 
-        if (optionalMember.isEmpty()) {
+        if (!isExistUserId) {
             dto.setHttpStatus(HttpStatus.OK);
             dto.setMessage("사용가능한 id");
         } else {
