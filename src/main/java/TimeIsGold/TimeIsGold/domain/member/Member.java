@@ -1,14 +1,16 @@
 package TimeIsGold.TimeIsGold.domain.member;
 
+import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
 import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
 import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
@@ -26,21 +28,16 @@ public class Member {
     @Embedded
     private Otp otp;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "member")
-    private List<Schedule> schedules;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "timetable_id")
-    private Timetable timetable;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Timetable> timetables = new ArrayList<>();
 
     // GroupMember 클래스 네이밍이 헛갈릴 여지 있을 거같음..
     // 일단 단방향으로 설정하고 추후 양방향 관계 필요 시 수정
 
-//    @OneToMany(mappedBy = "member")
-//    private List<GroupMember> groupMembers = new ArrayList<>();
+    @OneToMany(mappedBy = "member")
+    private List<GroupMember> groupMembers = new ArrayList<>();
 
-    public static Member createMember(String userId, String pw, String name) {
+    public static Member create(String userId, String pw, String name) {
 
         Member member = new Member();
         member.setUserId(userId);
@@ -49,5 +46,15 @@ public class Member {
         return member;
     }
 
+    private void setUserId(String userId) {
+        this.userId = userId;
+    }
 
+    private void setPw(String pw) {
+        this.pw = pw;
+    }
+
+    private void setName(String name) {
+        this.name = name;
+    }
 }
