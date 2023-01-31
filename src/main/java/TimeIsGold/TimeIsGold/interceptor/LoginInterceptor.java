@@ -24,7 +24,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 //            response.sendRedirect("/login?redirectURL=" + requestURI);
             return false;
         }
-
+        log.info("authorized client: {}", session.getAttribute(SessionConstants.LOGIN_MEMBER));
         return true;
     }
 
