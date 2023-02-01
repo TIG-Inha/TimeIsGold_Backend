@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     
    
     @Query("select m from Member m left join fetch m.timetables t where m.userId = :id and m.pw = :pw")
-    Member findByUserIdAndPw(String userId, String pw);
+    Member findByUserIdAndPw(@Param("id") String userId, @Param("pw") String pw);
 
 
     Optional<Member> findMemberByUserIdAndPw(String userId, String pw);
