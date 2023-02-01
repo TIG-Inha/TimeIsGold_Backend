@@ -1,10 +1,15 @@
 package TimeIsGold.TimeIsGold.exception;
 
+import TimeIsGold.TimeIsGold.api.ApiResponse;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.exception.member.MemberRegisterException;
+import TimeIsGold.TimeIsGold.exception.timetable.DuplicatedNameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -25,5 +30,21 @@ public class ControllerExceptionHandler {
 
         ErrorResult errorResult = new ErrorResult("LOGIN-EX", e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ApiResponse bindingExHandle(BindingResult bindingResult) {
+
+        ErrorResponse errorResponse = ErrorResponse.of(bindingResult);
+
+        return ApiResponse.createError(null, errorResponse);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DuplicatedNameException.class)
+    public ApiResponse duplicatedTableNameExHandle(DuplicatedNameException e){
+
+        return ApiResponse.createError(e.getMessage(), null);
     }
 }
