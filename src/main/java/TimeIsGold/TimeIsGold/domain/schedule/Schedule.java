@@ -2,6 +2,7 @@ package TimeIsGold.TimeIsGold.domain.schedule;
 
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
+import TimeIsGold.TimeIsGold.validation.Enum.ValidEnum;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +20,10 @@ public class Schedule {
     @Column(name = "schedule_id")
     private Long id;
 
-
     private String scheduleName;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
 
     private String startTime;
 
@@ -31,7 +34,8 @@ public class Schedule {
     private Timetable timetable;
 
 
-    public static Schedule create(String name, String startTime, String endTime,
+    public static Schedule create(String name, DayOfWeek dayOfWeek,
+                                  String startTime, String endTime,
                                           Timetable timetable){
         Schedule schedule = new Schedule();
 

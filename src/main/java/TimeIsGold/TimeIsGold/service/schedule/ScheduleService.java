@@ -6,6 +6,8 @@ import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
 import TimeIsGold.TimeIsGold.domain.schedule.ScheduleRepository;
 import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
 import TimeIsGold.TimeIsGold.domain.timetable.TimetableRepository;
+import TimeIsGold.TimeIsGold.exception.schedule.InvalidScheduleTimeException;
+import TimeIsGold.TimeIsGold.validation.TimeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,8 @@ public class ScheduleService {
     public Long add(Timetable timetable, ScheduleAddRequest request) {
 
         Schedule schedule = Schedule.create(
-                request.getName(), request.getStartTime(), request.getEndTime(), timetable);
+                request.getName(), request.getDayOfWeek(), request.getStartTime(),
+                request.getEndTime(), timetable);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
 
