@@ -55,4 +55,11 @@ public class ControllerExceptionHandler {
 
         return ApiResponse.createError(e.getMessage(), null);
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RuntimeException.class)
+    public ApiResponse runtimeExHandle(RuntimeException e) {
+
+        return ApiResponse.createError(e.getMessage(), null);
+    }
 }
