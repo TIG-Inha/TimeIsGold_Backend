@@ -4,6 +4,7 @@ import TimeIsGold.TimeIsGold.api.ApiResponse;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.exception.member.MemberRegisterException;
 import TimeIsGold.TimeIsGold.exception.timetable.DuplicatedNameException;
+import TimeIsGold.TimeIsGold.exception.timetable.NoSuchTimetableFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -43,7 +44,14 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DuplicatedNameException.class)
-    public ApiResponse duplicatedTableNameExHandle(DuplicatedNameException e){
+    public ApiResponse duplicatedTableNameExHandle(DuplicatedNameException e) {
+
+        return ApiResponse.createError(e.getMessage(), null);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NoSuchTimetableFound.class)
+    public ApiResponse noSuchTimetableFoundExHandle(NoSuchTimetableFound e) {
 
         return ApiResponse.createError(e.getMessage(), null);
     }
