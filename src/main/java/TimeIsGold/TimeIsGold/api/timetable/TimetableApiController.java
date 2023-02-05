@@ -56,16 +56,23 @@ public class TimetableApiController {
     public ApiResponse show(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember,
                             @PathVariable Long timetableId){
 
-        Timetable findTimetable = loginMember.getTimetables().stream()
-                .filter(t -> t.getId() == timetableId)
-                .findFirst().orElseGet(() -> {
-                    throw new NoSuchTimetableFound("존재하지 않는 시간표입니다.");
+
+        // 경로변수로 받은 timetableId 로 시간표 조회하기
+        Timetable findTimetable = timetableRepository.findById(timetableId).orElseThrow(()->{
+            throw new NoSuchTimetableFound("존재하지 않는 시간표입니다.");
+        });
+
+        // 다른 사용자의 시간표를 접근하려 할때 처리
+        loginMember.getTimetables().stream()
+                .filter(t->t.getId().equals(findTimetable.getId()))
+                .findFirst().orElseThrow(()->{
+                    throw new NoSuchTimetableFound("유효하지 않은 접근입니다.");
                 });
 
         String name = findTimetable.getName();
         List<ScheduleShowResponse> scheduleShowResponses = new ArrayList<>();
         findTimetable.getSchedules().forEach(s -> {
-            scheduleShowResponses.add(new ScheduleShowResponse(s.getScheduleName(), s.getDayOfWeek(),
+            scheduleShowResponses.add(new ScheduleShowResponse(s.getId(), s.getName(), s.getDayOfWeek(),
                     s.getStartTime(), s.getEndTime()));
         });
 
