@@ -56,8 +56,8 @@ public class GroupController {
         Group group=Group.create(groupName, 1L);
         GroupMember groupMember = GroupMember.create(loginMember, group, "HOST");
         String otp=group.getGroupOtp().getOtpCode();
-        //groupRepository.save(group);
-        //groupMemberRepository.save(groupMember);
+        groupRepository.save(group);
+        groupMemberRepository.save(groupMember);
 
 
         //SSE 연결
