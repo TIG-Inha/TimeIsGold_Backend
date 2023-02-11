@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.exception;
 
 import TimeIsGold.TimeIsGold.api.ApiResponse;
+import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.exception.member.MemberRegisterException;
 import TimeIsGold.TimeIsGold.exception.timetable.DuplicatedNameException;
@@ -60,6 +61,12 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ApiResponse runtimeExHandle(RuntimeException e) {
 
+        return ApiResponse.createError(e.getMessage(), null);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(SessionExpireException.class)
+    public ApiResponse sessionExpireExHandle(SessionExpireException e){
         return ApiResponse.createError(e.getMessage(), null);
     }
 }

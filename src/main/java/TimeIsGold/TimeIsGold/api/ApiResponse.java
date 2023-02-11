@@ -31,9 +31,13 @@ public class ApiResponse<T> {
         return new ApiResponse<>(ERROR_STATUS, message, errors);
     }
 
+
+
     private ApiResponse(String status, String message,T data) {
         this.status = status;
         this.data = data;
         this.message = message;
     }
+
+
 }

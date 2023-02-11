@@ -1,8 +1,7 @@
 package TimeIsGold.TimeIsGold.domain.group;
 
 import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
-import TimeIsGold.TimeIsGold.domain.member.Member;
-import TimeIsGold.TimeIsGold.domain.member.Otp;
+import TimeIsGold.TimeIsGold.domain.otp.Otp;
 import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name="Team")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group {
@@ -23,23 +23,34 @@ public class Group {
 
     private String name;
 
+    //참여자 수
+    private Long num;
+
     @Embedded
     private Otp groupOtp;
 
     @Embedded
     private TimetableForm compSet;
 
-    @Enumerated(EnumType.STRING)
-    private Position position;
+
 
     @OneToMany(mappedBy = "group")
     private List<GroupMember> groupMembers = new ArrayList<>();
 
-    public static Group create(String name) {
+    public static Group create(String name, Long num) {
 
         Group group = new Group();
+        Otp otp=Otp.createOtp();
+        group.groupOtp = otp;
+        group.num=num;
+        group.name=name;
 
         return group;
+    }
+
+    public void changeOtp(){
+        Otp otp = Otp.createOtp();
+        groupOtp=otp;
     }
 
 }

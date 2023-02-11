@@ -1,7 +1,7 @@
 //package TimeIsGold.TimeIsGold.repository;
 //
 //import TimeIsGold.TimeIsGold.domain.member.Member;
-//import TimeIsGold.TimeIsGold.domain.member.Otp;
+//import TimeIsGold.TimeIsGold.domain.otp.Otp;
 //import TimeIsGold.TimeIsGold.domain.OtpStatus;
 //import org.assertj.core.api.Assertions;
 //import org.junit.jupiter.api.Test;

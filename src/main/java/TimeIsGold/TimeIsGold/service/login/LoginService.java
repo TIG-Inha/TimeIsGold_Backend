@@ -15,7 +15,6 @@ public class LoginService {
 
     public Member login(String userId, String pw){
 
-
         return memberRepository.findByUserIdAndPw(userId,pw);
     }
 
