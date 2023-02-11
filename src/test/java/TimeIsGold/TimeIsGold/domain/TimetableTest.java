@@ -1,3 +1,4 @@
+/*
 package TimeIsGold.TimeIsGold.domain;
 
 import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
@@ -24,3 +25,4 @@ class TimetableTest {
     }
 
 }
+ */

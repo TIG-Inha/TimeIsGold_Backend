@@ -1,6 +1,8 @@
 package TimeIsGold.TimeIsGold.domain.groupMember;
 
 import TimeIsGold.TimeIsGold.domain.group.Group;
+import TimeIsGold.TimeIsGold.domain.group.Position;
+//import TimeIsGold.TimeIsGold.domain.group.Team;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,13 +30,21 @@ public class GroupMember {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    public static GroupMember create(Member member, Group group) {
+    @Enumerated(EnumType.STRING)
+    private Position position;
+
+    public static GroupMember create(Member member, Group group, String position) {
 
         GroupMember groupMember = new GroupMember();
         groupMember.setMember(member);
         groupMember.setGroup(group);
+        groupMember.setPosition(Position.valueOf("HOST"));
 
         return groupMember;
+    }
+
+    private void setPosition(Position position1) {
+        position=position1;
     }
 
     private void setMember(Member member) {

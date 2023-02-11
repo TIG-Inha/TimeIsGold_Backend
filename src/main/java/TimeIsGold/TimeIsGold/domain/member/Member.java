@@ -1,9 +1,8 @@
 package TimeIsGold.TimeIsGold.domain.member;
 
 import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
-import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
+import TimeIsGold.TimeIsGold.domain.otp.Otp;
 import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
