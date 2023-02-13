@@ -3,6 +3,7 @@ package TimeIsGold.TimeIsGold.api.schedule;
 import TimeIsGold.TimeIsGold.api.ApiResponse;
 import TimeIsGold.TimeIsGold.api.login.SessionConstants;
 import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleAddForm;
+import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleDeleteForm;
 import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleShowResponse;
 import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleUpdateForm;
 import TimeIsGold.TimeIsGold.domain.member.Member;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -93,10 +95,7 @@ public class ScheduleController {
 
 //        log.info("scheduleId from request form: {}", form.getScheduleId());
 
-
-
-
-        Schedule updateSchedule = scheduleService.update(loginMember, form);
+        Schedule updateSchedule = scheduleService.update(form);
 
         ScheduleShowResponse result = new ScheduleShowResponse(updateSchedule.getId(), updateSchedule.getName(),
                 updateSchedule.getDayOfWeek(), updateSchedule.getStartTime(), updateSchedule.getEndTime());
@@ -104,5 +103,13 @@ public class ScheduleController {
         return ApiResponse.createSuccess(result);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/delete")
+    public ApiResponse delete(@SessionAttribute(value = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
+                              @RequestBody @Valid ScheduleDeleteForm form) {
 
+        scheduleService.deleteSchedule(loginMember, form);
+
+        return ApiResponse.createSuccessWithOutContent();
+    }
 }

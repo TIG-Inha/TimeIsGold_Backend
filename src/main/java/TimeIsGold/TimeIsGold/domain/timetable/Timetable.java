@@ -27,7 +27,7 @@ public class Timetable {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "timetable")
+    @OneToMany(mappedBy = "timetable", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
 
     public static Timetable create(Member member, String name) {
@@ -39,6 +39,15 @@ public class Timetable {
         member.getTimetables().add(timetable);
 
         return timetable;
+    }
+
+    public void deleteSchedule(Long scheduleId) {
+        Schedule findSchedule = schedules.stream()
+                .filter(s -> s.getId().equals(scheduleId))
+                .findFirst()
+                .get();
+
+        schedules.remove(findSchedule);
     }
 
     private void setName(String name) {

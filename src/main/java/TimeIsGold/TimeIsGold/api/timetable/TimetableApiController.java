@@ -40,7 +40,7 @@ public class TimetableApiController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/")
-    public ApiResponse showAll(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember){
+    public ApiResponse showAll(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember) {
 
         List<TimetableShowAllResponse> responses = new ArrayList<>();
         loginMember.getTimetables().forEach(t -> {
@@ -54,18 +54,18 @@ public class TimetableApiController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{timetableId}")
     public ApiResponse show(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember,
-                            @PathVariable Long timetableId){
+                            @PathVariable Long timetableId) {
 
 
         // 경로변수로 받은 timetableId 로 시간표 조회하기
-        Timetable findTimetable = timetableRepository.findById(timetableId).orElseThrow(()->{
+        Timetable findTimetable = timetableRepository.findById(timetableId).orElseThrow(() -> {
             throw new NoSuchTimetableFound("존재하지 않는 시간표입니다.");
         });
 
         // 다른 사용자의 시간표를 접근하려 할때 처리
         loginMember.getTimetables().stream()
-                .filter(t->t.getId().equals(findTimetable.getId()))
-                .findFirst().orElseThrow(()->{
+                .filter(t -> t.getId().equals(findTimetable.getId()))
+                .findFirst().orElseThrow(() -> {
                     throw new NoSuchTimetableFound("유효하지 않은 접근입니다.");
                 });
 
@@ -80,4 +80,12 @@ public class TimetableApiController {
         return ApiResponse.createSuccess(response);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/delete")
+    public ApiResponse delete() {
+
+
+
+        return ApiResponse.createSuccessWithOutContent();
+    }
 }

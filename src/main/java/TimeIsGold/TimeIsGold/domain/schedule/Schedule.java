@@ -26,7 +26,7 @@ public class Schedule {
 
     private String endTime;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "timetable_id")
     private Timetable timetable;
 
@@ -58,6 +58,7 @@ public class Schedule {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
 
     private void setName(String scheduleName) {
         this.name = scheduleName;
