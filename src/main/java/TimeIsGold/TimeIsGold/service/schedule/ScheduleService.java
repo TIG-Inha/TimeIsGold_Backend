@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.service.schedule;
 
 import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleAddForm;
+import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleDeleteForm;
 import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleShowResponse;
 import TimeIsGold.TimeIsGold.api.schedule.dto.ScheduleUpdateForm;
 import TimeIsGold.TimeIsGold.domain.member.Member;
@@ -50,7 +51,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public Schedule update(Member loginMember, ScheduleUpdateForm form){
+    public Schedule update(ScheduleUpdateForm form){
 
         String startTime = form.getStartTime();
         String endTime = form.getEndTime();
@@ -86,8 +87,30 @@ public class ScheduleService {
 
     //schedule repo 에서 delete 시 timetable 테이블에 update 쿼리 날아가는지 체크할 것
     @Transactional
-    public void deleteSchedule(Long scheduleId) {
-        scheduleRepository.deleteById(scheduleId);
+    public void deleteSchedule(Member member, ScheduleDeleteForm form) {
+
+        // 시간표 조회
+        Timetable findTImetable = timetableRepository.findById(form.getTimetableId()).orElseThrow(() -> {
+            throw new ScheduleException("존재하지 않는 시간표 입니다.");
+        });
+
+        // 시간표가 본인 것인지 확인
+        if (findTImetable.getMember().getId() != member.getId()) {
+            throw new ScheduleException("잘못된 접근 입니다.");
+        }
+
+        // 해당 schedule 이 존재하는지
+        Schedule findSchedule = scheduleRepository.findById(form.getScheduleId()).orElseThrow(() -> {
+            throw new ScheduleException("존재하지 않는 일정입니다.");
+        });
+
+        // 스케줄이 시간표에 속하는지 확인
+        if (findSchedule.getTimetable().getId() != findTImetable.getId()) {
+            throw new ScheduleException("잘못된 접근 입니다.");
+        }
+
+        scheduleRepository.deleteById(findSchedule.getId());
+        findTImetable.deleteSchedule(findSchedule.getId());
     }
 
 
