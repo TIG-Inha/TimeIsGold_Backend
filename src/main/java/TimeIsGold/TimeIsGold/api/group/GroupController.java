@@ -61,7 +61,7 @@ public class GroupController {
 
 
         //SSE 연결
-        SseEmitter emitter=groupService.start(group.getId(), lastEventId);
+        SseEmitter emitter=groupService.start(group.getId(), loginMember.getId(), lastEventId);
 
 
         //ResponseDto

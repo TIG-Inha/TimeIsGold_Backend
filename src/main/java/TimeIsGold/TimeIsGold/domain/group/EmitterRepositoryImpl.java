@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class EmitterRepositoryImpl implements EmitterRepository{
+    //동시성 고려를 위해 ConcurrentHashMap 사용
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
@@ -27,9 +28,16 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     }
 
     @Override
-    public Map<String, Object> findAllEventCacheStartWithByMemberId(String memberId) {
+    public Map<String, SseEmitter> findAllEmitterStartWithById(String id) {
+        return emitters.entrySet().stream()
+                .filter(entry->entry.getKey().startsWith(id))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    @Override
+    public Map<String, Object> findAllEventCacheStartWithById(String id) {
         return eventCache.entrySet().stream()
-                .filter(entry->entry.getKey().startsWith(memberId))
+                .filter(entry->entry.getKey().startsWith(id))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

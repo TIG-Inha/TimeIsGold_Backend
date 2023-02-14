@@ -3,6 +3,7 @@ package TimeIsGold.TimeIsGold.controller;
 import TimeIsGold.TimeIsGold.api.login.SessionConstants;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.service.login.LoginService;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +26,7 @@ public class GroupControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
 
     @Test
     //@NullSource
