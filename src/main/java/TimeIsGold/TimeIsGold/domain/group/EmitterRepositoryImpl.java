@@ -28,9 +28,16 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     }
 
     @Override
-    public Map<String, Object> findAllEventCacheStartWithByMemberId(String memberId) {
+    public Map<String, SseEmitter> findAllEmitterStartWithById(String id) {
+        return emitters.entrySet().stream()
+                .filter(entry->entry.getKey().startsWith(id))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    @Override
+    public Map<String, Object> findAllEventCacheStartWithById(String id) {
         return eventCache.entrySet().stream()
-                .filter(entry->entry.getKey().startsWith(memberId))
+                .filter(entry->entry.getKey().startsWith(id))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

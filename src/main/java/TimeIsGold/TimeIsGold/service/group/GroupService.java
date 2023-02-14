@@ -16,16 +16,16 @@ public class GroupService {
 
     private EmitterRepository emitterRepository;
 
-    private String includeTime(Long userId){
-        String id=userId+"_"+System.currentTimeMillis();
+    private String includeTime(Long groupId, Long userId){
+        String id=groupId+"_"+userId+"_"+System.currentTimeMillis();
 
         return id;
     }
 
-    public SseEmitter start(Long userId, String lastEventId){
+    public SseEmitter start(Long groupId, Long userId, String lastEventId){
         //데이터가 유실된 시점을 파악하기 위해
         //emitter 구분을 위해
-        String emitterId=includeTime(userId);
+        String emitterId=includeTime(groupId, userId);
 
         //유효 시간 주기
         SseEmitter sseEmitter=new SseEmitter(DEFAULT_TIMEOUT);
@@ -36,19 +36,19 @@ public class GroupService {
         sseEmitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
 
         //ConcurrentHashMap이기 때문에 보낸 순서대로 저장되지 않으므로, 현재 시간을 포함시킨다.
-        String eventId=includeTime(userId);
+        String eventId=includeTime(groupId, userId);
         //SseEmiiter가 생성되면 더미 데이터를 보내야 함, 하나의 데이터도 전송되지 않는다면 유효 시간이 끝날 때 503 응답 발생
         sendToClient(sseEmitter, emitterId, eventId, "EventStream Created. [userId=" + userId + "]");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) {
-            sendLostData(lastEventId, userId, eventId, sseEmitter);
+            sendLostData(lastEventId, groupId, userId, eventId, sseEmitter);
         }
         return sseEmitter;
     }
 
-    private void sendLostData(String lastEventId, Long userId, String emitterId, SseEmitter sseEmitter){
-        Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByMemberId(String.valueOf(userId));
+    private void sendLostData(String lastEventId, Long groupId, Long userId, String emitterId, SseEmitter sseEmitter){
+        Map<String, Object> events = emitterRepository.findAllEventCacheStartWithById(String.valueOf(groupId+"_"+userId));
         events.entrySet().stream()
                 .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                 .forEach(entry -> sendToClient(sseEmitter, emitterId, entry.getKey(), entry.getValue()));
