@@ -48,9 +48,11 @@ public class Group {
         return group;
     }
 
-    public void changeOtp(){
+    public Otp changeOtp(){
         Otp otp = Otp.createOtp();
         groupOtp=otp;
+
+        return otp;
     }
 
 }

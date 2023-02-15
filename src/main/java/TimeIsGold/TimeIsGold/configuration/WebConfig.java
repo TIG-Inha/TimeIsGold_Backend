@@ -1,3 +1,4 @@
+/*
 package TimeIsGold.TimeIsGold.configuration;
 
 import TimeIsGold.TimeIsGold.interceptor.LoginInterceptor;
@@ -15,3 +16,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/", "/login", "/logout");
     }
 }
+*/

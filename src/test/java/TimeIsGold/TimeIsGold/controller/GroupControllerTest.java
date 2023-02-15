@@ -1,8 +1,10 @@
 package TimeIsGold.TimeIsGold.controller;
 
 import TimeIsGold.TimeIsGold.api.login.SessionConstants;
+import TimeIsGold.TimeIsGold.domain.group.Group;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.service.login.LoginService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,7 @@ public class GroupControllerTest {
     @Mock
     private final LoginService loginService;
     protected MockHttpServletRequest request;
+    protected MockHttpSession session;
 
     @Autowired
     public GroupControllerTest(LoginService loginService) {
@@ -39,10 +42,16 @@ public class GroupControllerTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception{
+    public void setUp(){
         Member member=loginService.login("id0","1234");
-        MockHttpSession session = new MockHttpSession();
+
+        session = new MockHttpSession();
+
         session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
+
+        Group group=Group.create("aaa", 1L);
+        session.setAttribute(SessionConstants.GROUP, group);
+        session.setMaxInactiveInterval(600);
 
         request = new MockHttpServletRequest();
         request.setSession(session);
@@ -61,5 +70,19 @@ public class GroupControllerTest {
         mockMvc.perform(get("/group/{groupName}","aaa"))
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    @DisplayName("Otp를 받는다.")
+    public void otp() throws Exception{
+
+        mockMvc.perform(get("/group/otp"))
+                .andExpect(status().isOk());
+    }
+
+    @AfterEach
+    public void clear(){
+        session.clearAttributes();
+        session = null;
     }
 }
