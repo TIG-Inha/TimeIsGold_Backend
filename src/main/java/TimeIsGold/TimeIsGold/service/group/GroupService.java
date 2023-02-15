@@ -7,7 +7,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Random;
+//import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class GroupService {
     }
 
     private void sendLostData(String lastEventId, Long groupId, Long userId, String emitterId, SseEmitter sseEmitter){
-        Map<String, Long> events = emitterRepository.findAllEventCacheStartWithById(String.valueOf(groupId+"_"+userId));
+        Map<String, Long> events = emitterRepository.findAllEventCacheStartWithById(groupId + "_" + userId);
         events.entrySet().stream()
                 .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                 .forEach(entry -> sendToClient(sseEmitter, emitterId, entry.getKey(), entry.getValue()));
