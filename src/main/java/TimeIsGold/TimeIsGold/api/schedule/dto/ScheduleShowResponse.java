@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ScheduleShowResponse {
 
+    private Long scheduleId;
     private String name;
     private DayOfWeek dayOfWeek;
     private String startTime;
