@@ -4,10 +4,7 @@ import TimeIsGold.TimeIsGold.api.login.SessionConstants;
 import TimeIsGold.TimeIsGold.domain.group.Group;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.service.login.LoginService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,6 +32,8 @@ public class GroupControllerTest {
     private final LoginService loginService;
     protected MockHttpServletRequest request;
     protected MockHttpSession session;
+    protected Group group;
+
 
     @Autowired
     public GroupControllerTest(LoginService loginService) {
@@ -49,7 +48,7 @@ public class GroupControllerTest {
 
         session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
 
-        Group group=Group.create("aaa", 1L);
+        group=Group.create("aaa", 1L);
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
@@ -80,9 +79,28 @@ public class GroupControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("참여할 경우")
+    public void participate() throws Exception{
+        String otp = group.getOtp();
+        Long num= group.getNum();
+
+        mockMvc.perform(get("/group/participate/{otp}", otp))
+                .andExpect(status().isOk());
+
+        //참여자 수가 +1 됐는지
+        Assertions.assertEquals(num+1, group.getNum());
+
+        //evencache의 size가 그룹 수만큼 늘어났는지
+    }
+
+
+
     @AfterEach
     public void clear(){
         session.clearAttributes();
         session = null;
     }
+
+
 }

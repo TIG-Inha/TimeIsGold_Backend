@@ -6,7 +6,9 @@ import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
+
+
     Group findByIdAndName(Long id, String name);
 
-    //Group findByOtp(String otp);
+    Group findByOtp(String otp);
 }

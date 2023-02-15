@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.service.group;
 
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
+import TimeIsGold.TimeIsGold.domain.group.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class GroupService {
         return id;
     }
 
-    public SseEmitter start(Long groupId, Long userId, String lastEventId){
+    public SseEmitter subscribe(Long groupId, Long userId, String lastEventId, Long num){
         //데이터가 유실된 시점을 파악하기 위해
         //emitter 구분을 위해
         String emitterId=includeTime(groupId, userId);
@@ -40,7 +41,8 @@ public class GroupService {
         //ConcurrentHashMap이기 때문에 보낸 순서대로 저장되지 않으므로, 현재 시간을 포함시킨다.
         String eventId=includeTime(groupId, userId);
         //SseEmiiter가 생성되면 더미 데이터를 보내야 함, 하나의 데이터도 전송되지 않는다면 유효 시간이 끝날 때 503 응답 발생
-        sendToClient(sseEmitter, emitterId, eventId, 1L);
+        sendToClient(sseEmitter, emitterId, eventId, num);
+        sendToAllGroupMember(groupId, num);
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) {
@@ -68,31 +70,23 @@ public class GroupService {
         }
     }
 
-    /*
-    public String createOTP(){
-        StringBuffer key = new StringBuffer();
-        Random rnd = new Random();
+    private void sendToAllGroupMember(Long groupId, Long num){
+        Map<String, SseEmitter> m = emitterRepository.findAllEmitterStartWithById(String.valueOf(groupId));
 
-        for(int i=0;i<8;i++){
-            int index=rnd.nextInt(3);
-
-            switch (index){
-                case 0:
-                    key.append((char) ((int) (rnd.nextInt(26)) + 97));
-                    // a~z (ex. 1+97=98 => (char)98 = 'b')
-                    break;
-                case 1:
-                    key.append((char) ((int) (rnd.nextInt(26)) + 65));
-                    // A~Z
-                    break;
-                case 2:
-                    key.append((rnd.nextInt(10)));
-                    // 0~9
-                    break;
+        m.forEach((key, value)->{
+            String[] s=key.split("_");
+            String eventId = s[0] + '_' + s[1] + '_' + System.currentTimeMillis();
+            emitterRepository.saveEventCache(eventId, num);
+            try {
+                value.send(SseEmitter.event()
+                        .id(eventId)
+                        .data(num)
+                );
+            } catch (IOException e) {
+                emitterRepository.deleteById(key);
             }
-        }
-        return key.toString();
+        });
     }
-    */
+
 
 }

@@ -77,7 +77,7 @@ public class GroupController {
 
 
         //SSE 연결
-        SseEmitter emitter=groupService.start(group.getId(), loginMember.getId(), lastEventId);
+        SseEmitter emitter=groupService.subscribe(group.getId(), loginMember.getId(), lastEventId, 1L);
 
 
         //ResponseDto
@@ -114,5 +114,34 @@ public class GroupController {
         return ApiResponse.createSuccess(response);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/group/participate/{otp}", produces = "text/event-stream")
+    public SseEmitter participate(@PathVariable("otp") String otp,
+                                  @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
+                                  HttpServletRequest request){
+        //사용자 정보 이름 불러오기
+        HttpSession session=request.getSession(false);
+
+        Member loginMember = (Member) session.getAttribute(SessionConstants.LOGIN_MEMBER);
+        if(loginMember==null){
+            throw new SessionExpireException("세션이 만료되었습니다.");
+        }
+
+        //그룹 정보 불러오기
+        Group group=groupRepository.findByOtp(otp);
+
+        if(group==null){
+            throw new GroupException("그룹이 유효하지 않습니다.");
+        }
+
+        group.increaseNum(group);
+        groupRepository.save(group);
+
+        //SSE 연결
+        SseEmitter emitter=groupService.subscribe(group.getId(), loginMember.getId(), lastEventId, group.getNum());
+
+
+        return emitter;
+    }
 
 }
