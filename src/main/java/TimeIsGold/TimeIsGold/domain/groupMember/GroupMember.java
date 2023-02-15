@@ -2,7 +2,6 @@ package TimeIsGold.TimeIsGold.domain.groupMember;
 
 import TimeIsGold.TimeIsGold.domain.group.Group;
 import TimeIsGold.TimeIsGold.domain.group.Position;
-//import TimeIsGold.TimeIsGold.domain.group.Team;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,7 +37,7 @@ public class GroupMember {
         GroupMember groupMember = new GroupMember();
         groupMember.setMember(member);
         groupMember.setGroup(group);
-        groupMember.setPosition(Position.valueOf("HOST"));
+        groupMember.setPosition(Position.valueOf(position));
 
         return groupMember;
     }

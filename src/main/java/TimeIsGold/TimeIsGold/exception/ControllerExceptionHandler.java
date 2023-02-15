@@ -59,15 +59,15 @@ public class ControllerExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(RuntimeException.class)
-    public ApiResponse runtimeExHandle(ScheduleException e) {
-
+    @ExceptionHandler(SessionExpireException.class)
+    public ApiResponse SessionExpireExHandle(SessionExpireException e) {
+    
         return ApiResponse.createError(e.getMessage(), null);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(SessionExpireException.class)
-    public ApiResponse sessionExpireExHandle(SessionExpireException e){
+    @ExceptionHandler(RuntimeException.class)
+    public ApiResponse sessionExpireExHandle(RuntimeException e){
         return ApiResponse.createError(e.getMessage(), null);
     }
 }

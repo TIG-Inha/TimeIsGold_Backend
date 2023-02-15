@@ -2,19 +2,21 @@ package TimeIsGold.TimeIsGold.service.group;
 
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Random;
+//import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class GroupService {
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
 
-    private EmitterRepository emitterRepository;
+    @Autowired
+    private final EmitterRepository emitterRepository;
 
     private String includeTime(Long groupId, Long userId){
         String id=groupId+"_"+userId+"_"+System.currentTimeMillis();
@@ -38,7 +40,7 @@ public class GroupService {
         //ConcurrentHashMap이기 때문에 보낸 순서대로 저장되지 않으므로, 현재 시간을 포함시킨다.
         String eventId=includeTime(groupId, userId);
         //SseEmiiter가 생성되면 더미 데이터를 보내야 함, 하나의 데이터도 전송되지 않는다면 유효 시간이 끝날 때 503 응답 발생
-        sendToClient(sseEmitter, emitterId, eventId, "EventStream Created. [userId=" + userId + "]");
+        sendToClient(sseEmitter, emitterId, eventId, 1L);
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) {
@@ -48,13 +50,13 @@ public class GroupService {
     }
 
     private void sendLostData(String lastEventId, Long groupId, Long userId, String emitterId, SseEmitter sseEmitter){
-        Map<String, Object> events = emitterRepository.findAllEventCacheStartWithById(String.valueOf(groupId+"_"+userId));
+        Map<String, Long> events = emitterRepository.findAllEventCacheStartWithById(groupId + "_" + userId);
         events.entrySet().stream()
                 .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                 .forEach(entry -> sendToClient(sseEmitter, emitterId, entry.getKey(), entry.getValue()));
     }
 
-    private void sendToClient(SseEmitter emitter, String emitterId, String eventId, Object data) {
+    private void sendToClient(SseEmitter emitter, String emitterId, String eventId, Long data) {
         try {
             emitter.send(SseEmitter.event()
                     .id(eventId)
