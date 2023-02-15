@@ -1,6 +1,7 @@
 package TimeIsGold.TimeIsGold.exception;
 
 import TimeIsGold.TimeIsGold.api.ApiResponse;
+import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.exception.member.MemberRegisterException;
@@ -70,4 +71,11 @@ public class ControllerExceptionHandler {
     public ApiResponse sessionExpireExHandle(RuntimeException e){
         return ApiResponse.createError(e.getMessage(), null);
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(GroupException.class)
+    public ApiResponse sessionExpireExHandle(GroupException e){
+        return ApiResponse.createError(e.getMessage(), null);
+    }
+
 }

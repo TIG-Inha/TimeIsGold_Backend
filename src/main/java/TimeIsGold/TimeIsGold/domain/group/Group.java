@@ -29,6 +29,8 @@ public class Group {
     @Embedded
     private Otp groupOtp;
 
+    private String otp;
+
     @Embedded
     private TimetableForm compSet;
 
@@ -42,15 +44,23 @@ public class Group {
         Group group = new Group();
         Otp otp=Otp.createOtp();
         group.groupOtp = otp;
+        group.otp=otp.getOtpCode();
         group.num=num;
         group.name=name;
 
         return group;
     }
 
-    public void changeOtp(){
-        Otp otp = Otp.createOtp();
-        groupOtp=otp;
+    public Otp changeOtp(){
+        Otp temp = Otp.createOtp();
+        groupOtp=temp;
+        otp = temp.getOtpCode();
+
+        return groupOtp;
+    }
+
+    public void increaseNum(Group group){
+        group.num++;
     }
 
 }
