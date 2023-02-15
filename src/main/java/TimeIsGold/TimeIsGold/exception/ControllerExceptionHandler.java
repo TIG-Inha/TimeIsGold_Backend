@@ -4,6 +4,7 @@ import TimeIsGold.TimeIsGold.api.ApiResponse;
 import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.exception.member.MemberRegisterException;
+import TimeIsGold.TimeIsGold.exception.schedule.ScheduleException;
 import TimeIsGold.TimeIsGold.exception.timetable.DuplicatedNameException;
 import TimeIsGold.TimeIsGold.exception.timetable.NoSuchTimetableFound;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(SessionExpireException.class)
     public ApiResponse SessionExpireExHandle(SessionExpireException e) {
-
+    
         return ApiResponse.createError(e.getMessage(), null);
     }
 
