@@ -2,6 +2,7 @@ package TimeIsGold.TimeIsGold.service.group;
 
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -14,7 +15,8 @@ import java.util.Map;
 public class GroupService {
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
 
-    private EmitterRepository emitterRepository;
+    @Autowired
+    private final EmitterRepository emitterRepository;
 
     private String includeTime(Long groupId, Long userId){
         String id=groupId+"_"+userId+"_"+System.currentTimeMillis();
