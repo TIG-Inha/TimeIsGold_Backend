@@ -8,6 +8,7 @@ import TimeIsGold.TimeIsGold.domain.group.Group;
 import TimeIsGold.TimeIsGold.domain.group.GroupRepository;
 //import TimeIsGold.TimeIsGold.domain.group.Team;
 //import TimeIsGold.TimeIsGold.domain.group.TeamRepository;
+import TimeIsGold.TimeIsGold.domain.group.Position;
 import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
 import TimeIsGold.TimeIsGold.domain.groupMember.GroupMemberRepository;
 import TimeIsGold.TimeIsGold.domain.member.Member;
@@ -60,19 +61,21 @@ public class GroupController {
 
         //참여자 수 데이터에 저장
         Group group=Group.create(groupName, 1L);
-        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
 
         //group id를 생성자 session에 저장
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
+        groupRepository.save(group);
+
+        //생성자 객체 찾아 그룹 멤버에 HOST 넣기
+        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
+
         if(member==null){
             throw new LoginException("로그인 오류");
         }
 
-        GroupMember groupMember = GroupMember.create(member, group, "HOST");
-        String otp=group.getGroupOtp().getOtpCode();
-        groupRepository.save(group);
+        GroupMember groupMember = GroupMember.create(member, group, Position.HOST);//!!!
         groupMemberRepository.save(groupMember);
 
 
@@ -134,8 +137,20 @@ public class GroupController {
             throw new GroupException("그룹이 유효하지 않습니다.");
         }
 
+        //참여자수+1 업데이트 하기
         group.increaseNum(group);
         groupRepository.save(group);
+
+        //생성자 객체 찾아 그룹 멤버에 PARTICIPANT 넣기
+        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
+
+        if(member==null){
+            throw new LoginException("로그인 오류");
+        }
+
+        GroupMember groupMember = GroupMember.create(member, group, Position.PARTICIPANT);//!!!
+        groupMemberRepository.save(groupMember);
+
 
         //SSE 연결
         SseEmitter emitter=groupService.subscribe(group.getId(), loginMember.getId(), lastEventId, group.getNum());
@@ -143,5 +158,7 @@ public class GroupController {
 
         return emitter;
     }
+
+
 
 }

@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -27,6 +29,9 @@ public class GroupControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    WebApplicationContext context;
 
     @Mock
     private final LoginService loginService;
@@ -52,9 +57,9 @@ public class GroupControllerTest {
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
-        request = new MockHttpServletRequest();
-        request.setSession(session);
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        //request = new MockHttpServletRequest();
+        //request.setSession(session);
+        //RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
 
@@ -66,7 +71,10 @@ public class GroupControllerTest {
         //MockHttpSession session = new MockHttpSession();
         //session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
 
-        mockMvc.perform(get("/group/{groupName}","aaa"))
+
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        mockMvc.perform(get("/group/{groupName}","aaa").session(session))
                 .andExpect(status().isOk());
 
     }
