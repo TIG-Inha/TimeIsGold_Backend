@@ -130,31 +130,8 @@ public class GroupController {
             throw new SessionExpireException("세션이 만료되었습니다.");
         }
 
-        //그룹 정보 불러오기
-        Group group=groupRepository.findByOtp(otp);
-
-        if(group==null){
-            throw new GroupException("그룹이 유효하지 않습니다.");
-        }
-
-        //참여자수+1 업데이트 하기
-        group.increaseNum(group);
-        groupRepository.save(group);
-
-        //생성자 객체 찾아 그룹 멤버에 PARTICIPANT 넣기
-        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
-
-        if(member==null){
-            throw new LoginException("로그인 오류");
-        }
-
-        GroupMember groupMember = GroupMember.create(member, group, Position.PARTICIPANT);//!!!
-        groupMemberRepository.save(groupMember);
-
-
         //SSE 연결
-        SseEmitter emitter=groupService.subscribe(group.getId(), loginMember.getId(), lastEventId, group.getNum());
-
+        SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId);
 
         return emitter;
     }
@@ -162,7 +139,16 @@ public class GroupController {
     // Group 취소, 나가기 api
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/cancel")
-    public void cancel(){
+    public void cancel(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+
+        if(session==null){
+            throw new SessionExpireException("세션 만료");
+        }
+
+        Group group = (Group) session.getAttribute(SessionConstants.GROUP);
+
+        groupService.cancel(group.getId(),group.getName());
 
     }
 
