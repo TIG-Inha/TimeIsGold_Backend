@@ -32,12 +32,12 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     private Position position;
 
-    public static GroupMember create(Member member, Group group, String position) {
+    public static GroupMember create(Member member, Group group, Position position) {
 
         GroupMember groupMember = new GroupMember();
         groupMember.setMember(member);
         groupMember.setGroup(group);
-        groupMember.setPosition(Position.valueOf(position));
+        groupMember.setPosition(position);
 
         return groupMember;
     }
