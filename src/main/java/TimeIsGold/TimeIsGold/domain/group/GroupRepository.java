@@ -11,4 +11,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     Group findByIdAndName(Long id, String name);
 
     Group findByOtp(String otp);
+
+    void deleteById(Long id);
 }

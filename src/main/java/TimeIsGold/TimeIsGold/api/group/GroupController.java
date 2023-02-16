@@ -159,6 +159,16 @@ public class GroupController {
         return emitter;
     }
 
+    // Group 취소, 나가기 api
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/group/cancel")
+    public void cancel(){
 
+    }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/group/out")
+    public void out(){
+
+    }
 }

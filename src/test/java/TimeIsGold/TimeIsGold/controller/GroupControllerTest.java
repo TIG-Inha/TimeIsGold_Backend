@@ -93,7 +93,7 @@ public class GroupControllerTest {
         String otp = group.getOtp();
         Long num= group.getNum();
 
-        mockMvc.perform(get("/group/participate/{otp}", otp))
+        mockMvc.perform(get("/group/participate/{otp}", otp).session(session))
                 .andExpect(status().isOk());
 
         //참여자 수가 +1 됐는지
@@ -101,6 +101,10 @@ public class GroupControllerTest {
 
         //evencache의 size가 그룹 수만큼 늘어났는지
     }
+
+    // Group 취소 api 테스트
+    // 그룹 관련된게 다 사라져는지 체크, 그룹 멤버, 그룹, emitter, cache 등
+
 
 
 

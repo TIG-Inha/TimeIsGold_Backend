@@ -1,4 +1,4 @@
-package TimeIsGold.TimeIsGold.domain;
+package TimeIsGold.TimeIsGold.repository;
 
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepositoryImpl;
