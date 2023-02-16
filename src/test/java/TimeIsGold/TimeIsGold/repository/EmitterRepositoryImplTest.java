@@ -97,7 +97,8 @@ public class EmitterRepositoryImplTest {
     public void deleteById() throws Exception {
         //given
         Long memberId = 1L;
-        String emitterId =  memberId + "_" + System.currentTimeMillis();
+        Long groupId=1L;
+        String emitterId =  groupId+"_"+memberId + "_" + System.currentTimeMillis();
         SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
 
         //when
@@ -108,5 +109,72 @@ public class EmitterRepositoryImplTest {
         Assertions.assertEquals(0, emitterRepository.findAllEmitterStartWithById(emitterId).size());
     }
 
+    @Test
+    @DisplayName("ID를 통해 Cache를 Repository에서 제거한다.")
+    public void deleteEventCacheById() throws Exception {
+        //given
+        Long memberId = 1L;
+        Long groupId=1L;
+        String eventId =  groupId+"_"+memberId + "_" + System.currentTimeMillis();
 
+        //when
+        emitterRepository.saveEventCache(eventId, 1L);
+        emitterRepository.deleteEventCacheById(eventId);
+
+        //then
+        Assertions.assertEquals(0, emitterRepository.findAllEventCacheStartWithById(eventId).size());
+    }
+
+    @Test
+    @DisplayName("ID를 통해 Cache를 Repository에서 제거한다.")
+    public void deleteEmitterStartWithByGroup() throws Exception {
+        Long memberId1 = 1L;
+        Long memberId2 = 2L;
+        Long memberId3 = 3L;
+
+        Long groupId1=1L;
+        Long groupId2=2L;
+
+        String emitterId1 =  groupId1+"_"+memberId1 + "_" + System.currentTimeMillis();
+        String emitterId2 =  groupId2+"_"+memberId2 + "_" + System.currentTimeMillis();
+        String emitterId3 =  groupId1+"_"+memberId3 + "_" + System.currentTimeMillis();
+
+        SseEmitter sseEmitter1 = new SseEmitter(DEFAULT_TIMEOUT);
+        SseEmitter sseEmitter2 = new SseEmitter(DEFAULT_TIMEOUT);
+        SseEmitter sseEmitter3 = new SseEmitter(DEFAULT_TIMEOUT);
+
+        //when
+        emitterRepository.save(emitterId1, sseEmitter1);
+        emitterRepository.save(emitterId2, sseEmitter2);
+        emitterRepository.save(emitterId3, sseEmitter3);
+
+        emitterRepository.deleteEmitterStartWithByGroup(groupId1);
+
+        Assertions.assertEquals(emitterRepository.countEmitter(),1);
+    }
+
+    @Test
+    @DisplayName("ID를 통해 Cache를 Repository에서 제거한다.")
+    public void deleteEventCacheStartWithByGroup() throws Exception {
+        Long memberId1 = 1L;
+        Long memberId2 = 2L;
+        Long memberId3 = 3L;
+
+        Long groupId1=1L;
+        Long groupId2=2L;
+
+        String eventId1 =  groupId1+"_"+memberId1 + "_" + System.currentTimeMillis();
+        String eventId2 =  groupId2+"_"+memberId2 + "_" + System.currentTimeMillis();
+        String eventId3 =  groupId1+"_"+memberId3 + "_" + System.currentTimeMillis();
+
+
+        //when
+        emitterRepository.saveEventCache(eventId1, 1L);
+        emitterRepository.saveEventCache(eventId2, 1L);
+        emitterRepository.saveEventCache(eventId3, 1L);
+
+        emitterRepository.deleteEventCacheStartWithByGroup(groupId1);
+
+        Assertions.assertEquals(emitterRepository.countEventCache(),1);
+    }
 }
