@@ -61,12 +61,12 @@ public class GroupController {
 
         //참여자 수 데이터에 저장
         Group group=Group.create(groupName, 1L);
+        groupRepository.save(group);
 
         //group id를 생성자 session에 저장
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
-        groupRepository.save(group);
 
         //생성자 객체 찾아 그룹 멤버에 HOST 넣기
         Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
