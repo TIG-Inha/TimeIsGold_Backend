@@ -36,7 +36,7 @@ public class Group {
 
 
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", orphanRemoval = true)
     private List<GroupMember> groupMembers = new ArrayList<>();
 
     public static Group create(String name, Long num) {

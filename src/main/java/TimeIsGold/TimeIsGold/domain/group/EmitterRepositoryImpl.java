@@ -2,6 +2,7 @@ package TimeIsGold.TimeIsGold.domain.group;
 
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
@@ -32,6 +33,29 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     }
 
     @Override
+    public void deleteEventCacheById(String id) {
+        eventCache.remove(id);
+    }
+
+    @Override
+    public void deleteEmitterStartWithByGroup(Long groupId){
+        Map<String, SseEmitter> deleteList = findAllEmitterStartWithById(String.valueOf(groupId));
+
+        deleteList.forEach((key, value)->{
+            deleteById(key);
+        });
+    }
+
+    @Override
+    public void deleteEventCacheStartWithByGroup(Long groupId){
+        Map<String, Long> deleteList = findAllEventCacheStartWithById(String.valueOf(groupId));
+
+        deleteList.forEach((key, value)->{
+            deleteEventCacheById(key);
+        });
+    }
+
+    @Override
     public Map<String, SseEmitter> findAllEmitterStartWithById(String id) {
         return emitters.entrySet().stream()
                 .filter(entry->entry.getKey().startsWith(id))
@@ -45,4 +69,13 @@ public class EmitterRepositoryImpl implements EmitterRepository{
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    @Override
+    public Integer countEmitter(){
+        return emitters.size();
+    }
+
+    @Override
+    public Integer countEventCache(){
+        return eventCache.size();
+    }
 }

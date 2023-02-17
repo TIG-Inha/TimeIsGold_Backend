@@ -75,7 +75,7 @@ public class GroupController {
             throw new LoginException("로그인 오류");
         }
 
-        GroupMember groupMember = GroupMember.create(member, group, Position.HOST);//!!!
+        GroupMember groupMember = GroupMember.create(member, group, Position.HOST);
         groupMemberRepository.save(groupMember);
 
 
@@ -137,28 +137,34 @@ public class GroupController {
             throw new GroupException("그룹이 유효하지 않습니다.");
         }
 
-        //참여자수+1 업데이트 하기
-        group.increaseNum(group);
-        groupRepository.save(group);
-
-        //생성자 객체 찾아 그룹 멤버에 PARTICIPANT 넣기
-        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
-
-        if(member==null){
-            throw new LoginException("로그인 오류");
-        }
-
-        GroupMember groupMember = GroupMember.create(member, group, Position.PARTICIPANT);//!!!
-        groupMemberRepository.save(groupMember);
-
+        session.setAttribute(SessionConstants.GROUP, group);
 
         //SSE 연결
-        SseEmitter emitter=groupService.subscribe(group.getId(), loginMember.getId(), lastEventId, group.getNum());
-
+        SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId, group);
 
         return emitter;
     }
 
+    // Group 취소, 나가기 api
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/group/cancel")
+    public ApiResponse cancel(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
 
+        if(session==null){
+            throw new SessionExpireException("세션 만료");
+        }
 
+        Group group = (Group) session.getAttribute(SessionConstants.GROUP);
+
+        groupService.cancel(group.getId(),group.getName());
+
+        return ApiResponse.createSuccess(null);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/group/out")
+    public void out(){
+
+    }
 }

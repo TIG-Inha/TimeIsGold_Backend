@@ -1,13 +1,22 @@
 package TimeIsGold.TimeIsGold.service.group;
 
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
+import TimeIsGold.TimeIsGold.domain.group.Group;
 import TimeIsGold.TimeIsGold.domain.group.GroupRepository;
+import TimeIsGold.TimeIsGold.domain.group.Position;
+import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
+import TimeIsGold.TimeIsGold.domain.groupMember.GroupMemberRepository;
+import TimeIsGold.TimeIsGold.domain.member.Member;
+import TimeIsGold.TimeIsGold.domain.member.MemberRepository;
+import TimeIsGold.TimeIsGold.exception.group.GroupException;
+import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 //import java.util.Random;
 
@@ -18,6 +27,12 @@ public class GroupService {
 
     @Autowired
     private final EmitterRepository emitterRepository;
+    @Autowired
+    private final GroupRepository groupRepository;
+    @Autowired
+    private final GroupMemberRepository groupMemberRepository;
+    @Autowired
+    private final MemberRepository memberRepository;
 
     private String includeTime(Long groupId, Long userId){
         String id=groupId+"_"+userId+"_"+System.currentTimeMillis();
@@ -88,5 +103,44 @@ public class GroupService {
         });
     }
 
+    public SseEmitter participate(Long id, String userId, String pw, String otp, String lastEventId, Group group){
 
+
+        //참여자수+1 업데이트 하기
+        group.increaseNum(group);
+        groupRepository.save(group);
+
+        //생성자 객체 찾아 그룹 멤버에 PARTICIPANT 넣기
+        Member member=memberRepository.findByUserIdAndPw(userId, pw);
+
+        if(member==null){
+            throw new LoginException("로그인 오류");
+        }
+
+        GroupMember groupMember = GroupMember.create(member, group, Position.PARTICIPANT);
+        groupMemberRepository.save(groupMember);
+
+
+        return subscribe(group.getId(), id, lastEventId, group.getNum());
+    }
+
+    public void cancel(Long groupId, String groupName){
+        Group group = groupRepository.findByIdAndName(groupId, groupName);
+
+        //Group, Group member Repository 삭제
+        deleteGroupMemberByGroup(group);
+        groupRepository.deleteById(groupId);
+
+        //sseEmitter, cache 삭제
+        emitterRepository.deleteEmitterStartWithByGroup(groupId);
+        emitterRepository.deleteEventCacheStartWithByGroup(groupId);
+    }
+
+    private void deleteGroupMemberByGroup(Group group){
+        List<GroupMember> list = groupMemberRepository.findAllByGroup(group);
+
+        list.forEach((entry)->{
+            entry.setMember(null);
+        });
+    }
 }
