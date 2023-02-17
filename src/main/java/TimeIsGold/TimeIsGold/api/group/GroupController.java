@@ -75,7 +75,7 @@ public class GroupController {
             throw new LoginException("로그인 오류");
         }
 
-        GroupMember groupMember = GroupMember.create(member, group, Position.HOST);//!!!
+        GroupMember groupMember = GroupMember.create(member, group, Position.HOST);
         groupMemberRepository.save(groupMember);
 
 
@@ -130,8 +130,17 @@ public class GroupController {
             throw new SessionExpireException("세션이 만료되었습니다.");
         }
 
+        //그룹 정보 불러오기
+        Group group=groupRepository.findByOtp(otp);
+
+        if(group==null){
+            throw new GroupException("그룹이 유효하지 않습니다.");
+        }
+
+        session.setAttribute(SessionConstants.GROUP, group);
+
         //SSE 연결
-        SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId);
+        SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId, group);
 
         return emitter;
     }
@@ -139,7 +148,7 @@ public class GroupController {
     // Group 취소, 나가기 api
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/cancel")
-    public void cancel(HttpServletRequest request){
+    public ApiResponse cancel(HttpServletRequest request){
         HttpSession session = request.getSession(false);
 
         if(session==null){
@@ -150,6 +159,7 @@ public class GroupController {
 
         groupService.cancel(group.getId(),group.getName());
 
+        return ApiResponse.createSuccess(null);
     }
 
     @ResponseStatus(HttpStatus.OK)

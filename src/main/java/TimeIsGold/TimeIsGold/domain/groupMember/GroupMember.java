@@ -6,6 +6,7 @@ import TimeIsGold.TimeIsGold.domain.member.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -46,11 +47,12 @@ public class GroupMember {
         position=position1;
     }
 
-    private void setMember(Member member) {
+    public void setMember(Member member) {
         this.member = member;
     }
 
     private void setGroup(Group group) {
         this.group = group;
     }
+
 }

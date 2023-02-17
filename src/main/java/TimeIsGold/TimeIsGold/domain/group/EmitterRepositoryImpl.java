@@ -2,6 +2,7 @@ package TimeIsGold.TimeIsGold.domain.group;
 
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;

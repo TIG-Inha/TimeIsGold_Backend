@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 //import java.util.Random;
 
@@ -102,13 +103,8 @@ public class GroupService {
         });
     }
 
-    public SseEmitter participate(Long id, String userId, String pw, String otp, String lastEventId){
-        //그룹 정보 불러오기
-        Group group=groupRepository.findByOtp(otp);
+    public SseEmitter participate(Long id, String userId, String pw, String otp, String lastEventId, Group group){
 
-        if(group==null){
-            throw new GroupException("그룹이 유효하지 않습니다.");
-        }
 
         //참여자수+1 업데이트 하기
         group.increaseNum(group);
@@ -132,11 +128,19 @@ public class GroupService {
         Group group = groupRepository.findByIdAndName(groupId, groupName);
 
         //Group, Group member Repository 삭제
-        groupMemberRepository.deleteByGroup(group);
-        groupRepository.deleteById(group.getId());
+        deleteGroupMemberByGroup(group);
+        groupRepository.deleteById(groupId);
 
         //sseEmitter, cache 삭제
         emitterRepository.deleteEmitterStartWithByGroup(groupId);
         emitterRepository.deleteEventCacheStartWithByGroup(groupId);
+    }
+
+    private void deleteGroupMemberByGroup(Group group){
+        List<GroupMember> list = groupMemberRepository.findAllByGroup(group);
+
+        list.forEach((entry)->{
+            entry.setMember(null);
+        });
     }
 }
