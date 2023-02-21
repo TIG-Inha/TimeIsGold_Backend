@@ -63,4 +63,8 @@ public class Group {
         group.num++;
     }
 
+    public void decreaseNum(Group group){
+        group.num--;
+    }
+
 }

@@ -137,7 +137,42 @@ public class GroupControllerTest {
 
     // Group 취소 api 테스트
     // 그룹 관련된게 다 사라져는지 체크, 그룹 멤버, 그룹, emitter, cache 등
+    @Test
+    @DisplayName("Group을 취소할 경우")
+    public void cancel() throws Exception {
 
+
+        //그룹 생성
+        mockMvc.perform(get("/group/{groupName}",group.getName()).session(session))
+                .andExpect(status().isOk());
+
+        Group temp = (Group) session.getAttribute(SessionConstants.GROUP);
+        Group group1 = groupRepository.findByIdAndName(temp.getId(), temp.getName());
+
+        //다른 사용자로 로그인
+        Member member = loginService.login("id1", "1234");
+        session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
+
+
+        //그룹 참여
+        mockMvc.perform(get("/group/participate/{otp}", group1.getOtp()).session(session))
+                .andExpect(status().isOk());
+
+        Assertions.assertEquals(groupRepository.count(),2);
+
+        //그룹 취소
+        mockMvc.perform(get("/group/cancel").session(session))
+                .andExpect(status().isOk());
+
+
+        Group group2 = groupRepository.findByIdAndName(group1.getId(), group1.getName());
+
+        //그룹 관련된 모든 데이터가 삭제 됐는지
+        //Assertions.assertEquals(groupRepository.findByIdAndName(group1.getId(),group1.getName()),null);
+        //Assertions.assertEquals(groupMemberRepository.findAllByGroup(group1),null);
+        Assertions.assertEquals(groupRepository.count(),1);
+        Assertions.assertEquals(groupMemberRepository.count(),0);
+    }
 
 
 
