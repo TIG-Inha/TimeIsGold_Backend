@@ -51,7 +51,7 @@ public class GroupMember {
         this.member = member;
     }
 
-    private void setGroup(Group group) {
+    public void setGroup(Group group) {
         this.group = group;
     }
 

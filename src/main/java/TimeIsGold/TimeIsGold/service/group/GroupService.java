@@ -132,8 +132,8 @@ public class GroupService {
         groupRepository.deleteById(groupId);
 
         //sseEmitter, cache 삭제
-        emitterRepository.deleteEmitterStartWithByGroup(groupId);
-        emitterRepository.deleteEventCacheStartWithByGroup(groupId);
+        emitterRepository.deleteEmitterStartWithById(String.valueOf(groupId));
+        emitterRepository.deleteEventCacheStartWithById(String.valueOf(groupId));
     }
 
     private void deleteGroupMemberByGroup(Group group){
@@ -142,5 +142,31 @@ public class GroupService {
         list.forEach((entry)->{
             entry.setMember(null);
         });
+    }
+
+    public void out(Member m, Group g){
+        Member member = memberRepository.findByUserIdAndPw(m.getUserId(), m.getPw());
+        Group group = groupRepository.findByIdAndName(g.getId(), g.getName());
+
+        GroupMember groupMember = groupMemberRepository.findByGroupAndMember(group, member);
+
+        if(groupMember!=null){
+            groupMember.setGroup(null);
+            groupMember.setMember(null);
+            groupMemberRepository.deleteById(groupMember.getId());
+
+            //참여자 수 1 감소
+            group.decreaseNum(group);
+            groupRepository.save(group);
+
+            //sseEmitter, cache 삭제
+            emitterRepository.deleteEmitterStartWithById(group.getId() + "_" + m.getId());
+            emitterRepository.deleteEventCacheStartWithById(group.getId() + "_" + m.getId());
+            //다른 참여자들에게 참여자 수 다시 전달
+            sendToAllGroupMember(group.getId(),group.getNum());
+        }
+        else{
+            throw new GroupException("그룹 멤버 없음");
+        }
     }
 }

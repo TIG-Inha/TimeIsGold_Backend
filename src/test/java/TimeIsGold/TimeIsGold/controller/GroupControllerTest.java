@@ -1,7 +1,10 @@
 package TimeIsGold.TimeIsGold.controller;
 
 import TimeIsGold.TimeIsGold.api.login.SessionConstants;
+import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
 import TimeIsGold.TimeIsGold.domain.group.Group;
+import TimeIsGold.TimeIsGold.domain.group.GroupRepository;
+import TimeIsGold.TimeIsGold.domain.groupMember.GroupMemberRepository;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.service.login.LoginService;
 import org.junit.jupiter.api.*;
@@ -14,12 +17,14 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.hamcrest.core.Is;
 
 import javax.transaction.Transactional;
 
+import static net.bytebuddy.matcher.ElementMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -33,17 +38,19 @@ public class GroupControllerTest {
     @Autowired
     WebApplicationContext context;
 
-    @Mock
-    private final LoginService loginService;
+    @Autowired
+    private EmitterRepository emitterRepository;
+    @Autowired
+    private LoginService loginService;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private GroupMemberRepository groupMemberRepository;
     protected MockHttpServletRequest request;
     protected MockHttpSession session;
     protected Group group;
 
 
-    @Autowired
-    public GroupControllerTest(LoginService loginService) {
-        this.loginService = loginService;
-    }
 
     @BeforeEach
     public void setUp(){
@@ -54,6 +61,8 @@ public class GroupControllerTest {
         session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
 
         group=Group.create("aaa", 1L);
+        groupRepository.save(group);
+
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
@@ -77,14 +86,22 @@ public class GroupControllerTest {
         mockMvc.perform(get("/group/{groupName}","aaa").session(session))
                 .andExpect(status().isOk());
 
+        Assertions.assertEquals(groupRepository.count(),2); //before에 이미 저장되어 있는 group이 있기 때문에 2
+        Assertions.assertEquals(groupMemberRepository.count(),1);
+        Assertions.assertEquals(emitterRepository.countEmitter(),1);
+        Assertions.assertEquals(emitterRepository.countEventCache(),1);
     }
 
     @Test
     @DisplayName("Otp를 받는다.")
     public void otp() throws Exception{
+        //group의 otp가 바뀌었는지 확인한다.
+        Group temp = (Group) session.getAttribute(SessionConstants.GROUP);
+        Group group1 = groupRepository.findByIdAndName(temp.getId(), temp.getName());
 
-        mockMvc.perform(get("/group/otp"))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/group/otp").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.otp").value(group1.getOtp()));
     }
 
     @Test
@@ -93,20 +110,78 @@ public class GroupControllerTest {
         String otp = group.getOtp();
         Long num= group.getNum();
 
+        //그룹 생성
+        mockMvc.perform(get("/group/{groupName}",group.getName()).session(session))
+                .andExpect(status().isOk());
+
+        Assertions.assertEquals(groupRepository.count(),2); //before에 이미 저장되어 있는 group이 있기 때문에 2
+        Assertions.assertEquals(groupMemberRepository.count(),1);
+        Assertions.assertEquals(emitterRepository.countEmitter(),1);
+        Assertions.assertEquals(emitterRepository.countEventCache(), 1);
+
+        //그룹 참여
         mockMvc.perform(get("/group/participate/{otp}", otp).session(session))
                 .andExpect(status().isOk());
 
         //참여자 수가 +1 됐는지
         Assertions.assertEquals(num+1, group.getNum());
 
-        //evencache의 size가 그룹 수만큼 늘어났는지
+        Assertions.assertEquals(groupRepository.count(),2); //before에 이미 저장되어 있는 group이 있기 때문에 2
+        Assertions.assertEquals(groupMemberRepository.count(),2);
+
+        //emitter와 even cache의 size가 그룹원 수만큼 늘어났는지
+        Assertions.assertEquals(emitterRepository.countEmitter(), 2);
+        Assertions.assertEquals(emitterRepository.countEventCache(), 2);
+
     }
 
     // Group 취소 api 테스트
     // 그룹 관련된게 다 사라져는지 체크, 그룹 멤버, 그룹, emitter, cache 등
+    @Test
+    @DisplayName("Group을 취소할 경우")
+    public void cancel() throws Exception {
 
 
+        //그룹 생성
+        mockMvc.perform(get("/group/{groupName}",group.getName()).session(session))
+                .andExpect(status().isOk());
 
+        Group temp = (Group) session.getAttribute(SessionConstants.GROUP);
+        Group group1 = groupRepository.findByIdAndName(temp.getId(), temp.getName());
+
+        //다른 사용자로 로그인
+        Member member = loginService.login("id1", "1234");
+        session.setAttribute(SessionConstants.LOGIN_MEMBER, member);
+
+
+        //그룹 참여
+        mockMvc.perform(get("/group/participate/{otp}", group1.getOtp()).session(session))
+                .andExpect(status().isOk());
+
+        Assertions.assertEquals(groupRepository.count(),2);
+        Assertions.assertEquals(groupMemberRepository.count(),2);
+
+        //그룹 취소
+        mockMvc.perform(get("/group/cancel").session(session))
+                .andExpect(status().isOk());
+
+
+        Group group2 = groupRepository.findByIdAndName(group1.getId(), group1.getName());
+
+        //그룹 관련된 모든 데이터가 삭제 됐는지,?오류가 뜸?
+        //Assertions.assertEquals(groupRepository.findByIdAndName(group1.getId(),group1.getName()),null);
+        //Assertions.assertEquals(groupMemberRepository.findAllByGroup(group1),null);
+        Assertions.assertEquals(groupRepository.count(),1);
+        Assertions.assertEquals(groupMemberRepository.count(),0);
+    }
+
+    @Test
+    @DisplayName("Group을 나가기를 할 경우")
+    public void out() throws Exception {
+        //emitter와 eventcache가 없어졌는지
+        //그룹, 그룹 멤버 수가 줄었는지
+        //참여자 숫자가 줄었는지
+    }
 
     @AfterEach
     public void clear(){

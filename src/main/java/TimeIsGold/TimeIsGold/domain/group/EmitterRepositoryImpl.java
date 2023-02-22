@@ -38,8 +38,8 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     }
 
     @Override
-    public void deleteEmitterStartWithByGroup(Long groupId){
-        Map<String, SseEmitter> deleteList = findAllEmitterStartWithById(String.valueOf(groupId));
+    public void deleteEmitterStartWithById(String id){
+        Map<String, SseEmitter> deleteList = findAllEmitterStartWithById(id);
 
         deleteList.forEach((key, value)->{
             deleteById(key);
@@ -47,8 +47,8 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     }
 
     @Override
-    public void deleteEventCacheStartWithByGroup(Long groupId){
-        Map<String, Long> deleteList = findAllEventCacheStartWithById(String.valueOf(groupId));
+    public void deleteEventCacheStartWithById(String id){
+        Map<String, Long> deleteList = findAllEventCacheStartWithById(id);
 
         deleteList.forEach((key, value)->{
             deleteEventCacheById(key);
@@ -78,4 +78,7 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     public Integer countEventCache(){
         return eventCache.size();
     }
+
+
+
 }

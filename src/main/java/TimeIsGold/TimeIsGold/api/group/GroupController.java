@@ -17,6 +17,7 @@ import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.service.group.GroupService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,20 +29,14 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class GroupController {
 
     private final GroupService groupService;
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
-
     private final MemberRepository memberRepository;
 
-    public GroupController(GroupService groupService, GroupRepository groupRepository, GroupMemberRepository groupMemberRepository, MemberRepository memberRepository) {
-        this.groupService = groupService;
-        this.groupRepository = groupRepository;
-        this.groupMemberRepository = groupMemberRepository;
-        this.memberRepository = memberRepository;
-    }
 
     //SSE 연결
     @ResponseStatus(HttpStatus.OK)
@@ -61,12 +56,12 @@ public class GroupController {
 
         //참여자 수 데이터에 저장
         Group group=Group.create(groupName, 1L);
+        groupRepository.save(group);
 
         //group id를 생성자 session에 저장
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
-        groupRepository.save(group);
 
         //생성자 객체 찾아 그룹 멤버에 HOST 넣기
         Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
@@ -164,7 +159,26 @@ public class GroupController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/out")
-    public void out(){
+    public ApiResponse out(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
 
+        if(session==null){
+            throw new SessionExpireException("세션 만료");
+        }
+
+        Member member=(Member) session.getAttribute(SessionConstants.LOGIN_MEMBER);
+        Group group = (Group) session.getAttribute(SessionConstants.GROUP);
+
+        if(member==null){
+            throw new LoginException("멤버 세션 오류");
+        }
+
+        if(group==null){
+            throw new GroupException("그룹 세션 오류");
+        }
+
+        groupService.out(member, group);
+
+        return ApiResponse.createSuccess(null);
     }
 }
