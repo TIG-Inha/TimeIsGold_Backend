@@ -148,7 +148,7 @@ public class EmitterRepositoryImplTest {
         emitterRepository.save(emitterId2, sseEmitter2);
         emitterRepository.save(emitterId3, sseEmitter3);
 
-        emitterRepository.deleteEmitterStartWithByGroup(groupId1);
+        emitterRepository.deleteEmitterStartWithById(String.valueOf(groupId1));
 
         Assertions.assertEquals(emitterRepository.countEmitter(),1);
     }
@@ -173,7 +173,7 @@ public class EmitterRepositoryImplTest {
         emitterRepository.saveEventCache(eventId2, 1L);
         emitterRepository.saveEventCache(eventId3, 1L);
 
-        emitterRepository.deleteEventCacheStartWithByGroup(groupId1);
+        emitterRepository.deleteEventCacheStartWithById(String.valueOf(groupId1));
 
         Assertions.assertEquals(emitterRepository.countEventCache(),1);
     }
