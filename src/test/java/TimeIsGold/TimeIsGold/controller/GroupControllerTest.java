@@ -159,6 +159,7 @@ public class GroupControllerTest {
                 .andExpect(status().isOk());
 
         Assertions.assertEquals(groupRepository.count(),2);
+        Assertions.assertEquals(groupMemberRepository.count(),2);
 
         //그룹 취소
         mockMvc.perform(get("/group/cancel").session(session))
@@ -167,14 +168,20 @@ public class GroupControllerTest {
 
         Group group2 = groupRepository.findByIdAndName(group1.getId(), group1.getName());
 
-        //그룹 관련된 모든 데이터가 삭제 됐는지
+        //그룹 관련된 모든 데이터가 삭제 됐는지,?오류가 뜸?
         //Assertions.assertEquals(groupRepository.findByIdAndName(group1.getId(),group1.getName()),null);
         //Assertions.assertEquals(groupMemberRepository.findAllByGroup(group1),null);
         Assertions.assertEquals(groupRepository.count(),1);
         Assertions.assertEquals(groupMemberRepository.count(),0);
     }
 
-
+    @Test
+    @DisplayName("Group을 나가기를 할 경우")
+    public void out() throws Exception {
+        //emitter와 eventcache가 없어졌는지
+        //그룹, 그룹 멤버 수가 줄었는지
+        //참여자 숫자가 줄었는지
+    }
 
     @AfterEach
     public void clear(){

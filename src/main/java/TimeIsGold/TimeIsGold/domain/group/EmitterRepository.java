@@ -15,8 +15,8 @@ public interface EmitterRepository {
     void deleteById(String id);
     void deleteEventCacheById(String id);
 
-    void deleteEmitterStartWithByGroup(Long groupId);
-    void deleteEventCacheStartWithByGroup(Long groupId);
+    void deleteEmitterStartWithById(String id);
+    void deleteEventCacheStartWithById(String id);
 
     Map<String, SseEmitter> findAllEmitterStartWithById(String id);
     Map<String, Long> findAllEventCacheStartWithById(String id);
