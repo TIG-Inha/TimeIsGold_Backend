@@ -13,6 +13,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     Group findByOtp(String otp);
 
-    @Transactional
+    @Transactional //transactional 메소드 위에 놓기, 나중에 수정 필요
     void deleteById(Long id);
 }
