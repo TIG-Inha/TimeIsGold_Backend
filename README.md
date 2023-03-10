@@ -6,6 +6,9 @@
 
 ## 📗 Swagger
 - [TIG API 문서](https://app.swaggerhub.com/apis-docs/stackzero00/TimeIsGold/1.0.0#/)
+
+## 🎇 ERD
+- [ERD](https://www.erdcloud.com/d/MDKXofwB8JwDSfT9J)
 ---
 
 ## 🍉 규칙
