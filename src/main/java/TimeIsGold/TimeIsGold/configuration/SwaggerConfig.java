@@ -17,8 +17,9 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
+                .groupName("aa")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.springswagger.controller"))
+                .apis(RequestHandlerSelectors.basePackage("TimeIsGold.TimeIsGold"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
