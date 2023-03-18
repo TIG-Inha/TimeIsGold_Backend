@@ -30,6 +30,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@RequestMapping("/group")
 @RequiredArgsConstructor
 public class GroupController {
 
@@ -42,7 +43,7 @@ public class GroupController {
     //SSE 연결
     @ApiOperation(value="group start", notes="Group을 생성하는 api, 여기서 group session 생성, 반드시 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/group/{groupName}", produces = "text/event-stream")
+    @GetMapping(value = "/{groupName}", produces = "text/event-stream")
     public SseEmitter start(@PathVariable("groupName") String groupName,
                              @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
                              HttpServletRequest request) {
@@ -88,7 +89,7 @@ public class GroupController {
 
     @ApiOperation(value="group otp", notes="Group otp를 바꿔주고 리턴해주는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/group/otp")
+    @GetMapping(value = "/otp")
     public ApiResponse otp(HttpServletRequest request){
         HttpSession session=request.getSession(false);
 
@@ -117,7 +118,7 @@ public class GroupController {
 
     @ApiOperation(value="group participate", notes="Group을 참여하는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/group/participate/{otp}", produces = "text/event-stream")
+    @GetMapping(value = "/participate/{otp}", produces = "text/event-stream")
     public SseEmitter participate(@PathVariable("otp") String otp,
                                   @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
                                   HttpServletRequest request){
@@ -147,7 +148,7 @@ public class GroupController {
     // Group 취소, 나가기 api
     @ApiOperation(value="group cancel", notes="Group을 취소하는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/group/cancel")
+    @GetMapping(value = "/cancel")
     public ApiResponse cancel(HttpServletRequest request){
         HttpSession session = request.getSession(false);
 
@@ -164,7 +165,7 @@ public class GroupController {
 
     @ApiOperation(value="group out", notes="Group을 나가는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/group/out")
+    @GetMapping(value = "/out")
     public ApiResponse out(HttpServletRequest request){
         HttpSession session = request.getSession(false);
 
