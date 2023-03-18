@@ -13,11 +13,14 @@ import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
 import TimeIsGold.TimeIsGold.exception.schedule.ScheduleException;
 import TimeIsGold.TimeIsGold.service.schedule.ScheduleService;
 import TimeIsGold.TimeIsGold.validation.TimeValidator;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -33,7 +36,7 @@ public class ScheduleController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/add")
-    public ApiResponse add(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
+    public ApiResponse add(@ApiIgnore @SessionAttribute(name = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
             @RequestBody @Valid ScheduleAddForm request){
 
         String startTime = request.getStartTime();
@@ -66,7 +69,7 @@ public class ScheduleController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/update")
-    public ApiResponse update(@SessionAttribute(value = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
+    public ApiResponse update(@ApiIgnore @SessionAttribute(value = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
                               @RequestBody @Valid ScheduleUpdateForm form){
 
         log.info("request form: {}", form);
@@ -105,7 +108,7 @@ public class ScheduleController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/delete")
-    public ApiResponse delete(@SessionAttribute(value = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
+    public ApiResponse delete(@ApiIgnore @SessionAttribute(value = SessionConstants.LOGIN_MEMBER, required = true) Member loginMember,
                               @RequestBody @Valid ScheduleDeleteForm form) {
 
         scheduleService.deleteSchedule(loginMember, form);

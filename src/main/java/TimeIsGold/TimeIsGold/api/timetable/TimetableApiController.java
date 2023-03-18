@@ -14,6 +14,7 @@ import TimeIsGold.TimeIsGold.service.timetable.TimetableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class TimetableApiController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/add")
-    public ApiResponse create(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember,
+    public ApiResponse create(@ApiIgnore @SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember,
                               @RequestBody @Valid CreateTimetableRequest request) {
 
         String name = request.getName();
@@ -40,7 +41,7 @@ public class TimetableApiController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/")
-    public ApiResponse showAll(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember) {
+    public ApiResponse showAll(@ApiIgnore @SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember) {
 
         List<TimetableShowAllResponse> responses = new ArrayList<>();
         loginMember.getTimetables().forEach(t -> {
@@ -53,7 +54,7 @@ public class TimetableApiController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{timetableId}")
-    public ApiResponse show(@SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember,
+    public ApiResponse show(@ApiIgnore @SessionAttribute(name = SessionConstants.LOGIN_MEMBER) Member loginMember,
                             @PathVariable Long timetableId) {
 
 
