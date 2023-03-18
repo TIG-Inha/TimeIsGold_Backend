@@ -33,6 +33,7 @@ public class LoginController {
     private final LoginService loginService;
 
 
+    @ApiOperation(value="login", notes="login api, 여기서 login session 생성")
     @ApiResponse(code = 200, message="ok")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request, HttpServletRequest hsRequest){

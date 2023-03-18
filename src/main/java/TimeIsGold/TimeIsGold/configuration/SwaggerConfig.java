@@ -11,13 +11,14 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+
 @Configuration
 public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
-                .groupName("aa")
+                .groupName("TIG")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("TimeIsGold.TimeIsGold"))
                 .paths(PathSelectors.any())
@@ -27,8 +28,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Practice Swagger")
-                .description("practice swagger config")
+                .title("Swagger API Docs")
+                .description("Controller 실행 순서: 반드시 group을 실행하기 전에 login Api를 실행 후 해야 함")
                 .version("1.0")
                 .build();
     }
