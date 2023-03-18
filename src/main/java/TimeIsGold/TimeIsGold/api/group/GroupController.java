@@ -17,6 +17,7 @@ import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.service.group.GroupService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ public class GroupController {
 
 
     //SSE 연결
+    @ApiOperation(value="group start", notes="Group을 생성하는 api, 여기서 group session 생성, 반드시 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/{groupName}", produces = "text/event-stream")
     public SseEmitter start(@PathVariable("groupName") String groupName,
@@ -84,6 +86,7 @@ public class GroupController {
 
     }
 
+    @ApiOperation(value="group otp", notes="Group otp를 바꿔주고 리턴해주는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/otp")
     public ApiResponse otp(HttpServletRequest request){
@@ -112,6 +115,7 @@ public class GroupController {
         return ApiResponse.createSuccess(response);
     }
 
+    @ApiOperation(value="group participate", notes="Group을 참여하는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/participate/{otp}", produces = "text/event-stream")
     public SseEmitter participate(@PathVariable("otp") String otp,
@@ -141,6 +145,7 @@ public class GroupController {
     }
 
     // Group 취소, 나가기 api
+    @ApiOperation(value="group cancel", notes="Group을 취소하는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/cancel")
     public ApiResponse cancel(HttpServletRequest request){
@@ -157,6 +162,7 @@ public class GroupController {
         return ApiResponse.createSuccess(null);
     }
 
+    @ApiOperation(value="group out", notes="Group을 나가는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/group/out")
     public ApiResponse out(HttpServletRequest request){
