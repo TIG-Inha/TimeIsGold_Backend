@@ -4,9 +4,6 @@
 ## 🎁 Figma  
 - [TIG Figma](https://www.figma.com/file/MX8tT6hjhIB6VMpynJ4TKs/TimeIsGold?node-id=0%3A1&t=2Qk6xoXgwLyPus4b-0)
 
-## 📗 Swagger
-- [TIG API 문서](https://app.swaggerhub.com/apis-docs/stackzero00/TimeIsGold/1.0.0#/)
-
 ## 🎇 ERD
 - [ERD](https://www.erdcloud.com/d/MDKXofwB8JwDSfT9J)
 ---
