@@ -5,6 +5,11 @@ import TimeIsGold.TimeIsGold.api.login.dto.LoginResponseDto;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import TimeIsGold.TimeIsGold.service.login.LoginService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Optional;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -26,6 +32,9 @@ public class LoginController {
 
     private final LoginService loginService;
 
+
+    @ApiOperation(value="login", notes="login api, 여기서 login session 생성")
+    @ApiResponse(code = 200, message="ok")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request, HttpServletRequest hsRequest){
         LoginResponseDto dto = new LoginResponseDto();

@@ -1,10 +1,14 @@
-# TimeIsGold
-IGRUS team5 
+# 🎈 TimeIsGold
+약속 시간을 잡아주는 서비스
 
-## Figma  
-- https://www.figma.com/file/MX8tT6hjhIB6VMpynJ4TKs/TimeIsGold?node-id=0%3A1&t=2Qk6xoXgwLyPus4b-0
+## 🎁 Figma  
+- [TIG Figma](https://www.figma.com/file/MX8tT6hjhIB6VMpynJ4TKs/TimeIsGold?node-id=0%3A1&t=2Qk6xoXgwLyPus4b-0)
+
+## 🎇 ERD
+- [ERD](https://www.erdcloud.com/d/MDKXofwB8JwDSfT9J)
 ---
 
+## 🍉 규칙
 - branch명 규칙  
 ```
 feature/signup : 새로운 기능 추가할 때(기능별 1개씩만 signup1, signup2 => x)  
