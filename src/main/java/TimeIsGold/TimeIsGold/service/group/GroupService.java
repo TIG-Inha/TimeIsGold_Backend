@@ -11,6 +11,7 @@ import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.domain.member.MemberRepository;
 import TimeIsGold.TimeIsGold.domain.schedule.DayOfWeek;
 import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
@@ -175,8 +176,7 @@ public class GroupService {
         }
     }
 
-    public HashMap create(List<Schedule> scheduleList){
-        HashMap<String, String> map = new HashMap<>();
+    public TimetableForm create(List<Schedule> scheduleList){
 
         String mon = findTimeOnDay(DayOfWeek.MON, scheduleList);
         String tue = findTimeOnDay(DayOfWeek.TUE, scheduleList);
@@ -186,15 +186,16 @@ public class GroupService {
         String sat = findTimeOnDay(DayOfWeek.SAT, scheduleList);
         String sun = findTimeOnDay(DayOfWeek.SUN, scheduleList);
 
-        map.put("Mon", mon);
-        map.put("Tue", tue);
-        map.put("Wed", wed);
-        map.put("Thu", thu);
-        map.put("Fri", fri);
-        map.put("Sat", sat);
-        map.put("Sun", sun);
+        TimetableForm result=new TimetableForm();
+        result.setMon(mon);
+        result.setTue(tue);
+        result.setWed(wed);
+        result.setThu(thu);
+        result.setFri(fri);
+        result.setSat(sat);
+        result.setSun(sun);
 
-        return map;
+        return result;
     }
 
     public String findTimeOnDay(DayOfWeek day, List<Schedule> scheduleList) {

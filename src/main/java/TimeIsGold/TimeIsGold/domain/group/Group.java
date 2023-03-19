@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -67,4 +68,9 @@ public class Group {
         group.num--;
     }
 
+    public void setCompSet(TimetableForm time){this.compSet=time;}
+
+    public TimetableForm getCompSet() {
+        return this.compSet;
+    }
 }

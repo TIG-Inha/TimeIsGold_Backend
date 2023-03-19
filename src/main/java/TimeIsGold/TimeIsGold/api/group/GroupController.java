@@ -15,6 +15,7 @@ import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.domain.member.MemberRepository;
 import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
 import TimeIsGold.TimeIsGold.domain.schedule.ScheduleRepository;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
 import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
@@ -213,10 +214,23 @@ public class GroupController {
             System.out.println(schedule.getStartTime());
         }
 
-        HashMap<String, String> result = groupService.create(scheduleList);
+        TimetableForm result = groupService.create(scheduleList);
+        group.setCompSet(result);
+        groupRepository.save(group);
 
-        return ApiResponse.createSuccess(result);
+        return ApiResponse.createSuccess(group.getId());
     }
 
+    @ApiOperation(value="group 시간표 보기", notes="Group의 시간표를 보는 api")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/showTime/{groupId}")
+    public ApiResponse show(@PathVariable("groupId") Long id) {
+        Optional<Group> group = groupRepository.findById(id);
+        if(group.isEmpty()){
+            throw new GroupException("잘못된 그룹 id");
+        }
+
+        return ApiResponse.createSuccess(group.get().getCompSet());
+    }
 
 }

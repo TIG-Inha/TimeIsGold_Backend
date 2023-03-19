@@ -7,8 +7,9 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor//(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class TimetableForm {
 
     private String mon;
