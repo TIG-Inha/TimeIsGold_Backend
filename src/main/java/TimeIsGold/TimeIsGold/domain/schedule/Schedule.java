@@ -30,6 +30,7 @@ public class Schedule {
     @JoinColumn(name = "timetable_id")
     private Timetable timetable;
 
+    private Long tableId;
 
     public static Schedule create(String name, DayOfWeek dayOfWeek,
                                   String startTime, String endTime,
@@ -41,8 +42,21 @@ public class Schedule {
         schedule.setStartTime(startTime);
         schedule.setEndTime(endTime);
         schedule.setTimetable(timetable);
+        schedule.setTableId(timetable.getId());
 
         timetable.getSchedules().add(schedule);
+
+        return schedule;
+    }
+
+    public static Schedule create(String name, DayOfWeek dayOfWeek,
+                                  String startTime, String endTime){
+        Schedule schedule = new Schedule();
+
+        schedule.setName(name);
+        schedule.setDayOfWeek(dayOfWeek);
+        schedule.setStartTime(startTime);
+        schedule.setEndTime(endTime);
 
         return schedule;
     }
@@ -75,4 +89,6 @@ public class Schedule {
     private void setEndTime(String endTime) {
         this.endTime = endTime;
     }
+
+    private void setTableId(Long id){this.tableId=id; }
 }

@@ -33,12 +33,15 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     private Position position;
 
-    public static GroupMember create(Member member, Group group, Position position) {
+    private Long timetable_id;
+
+    public static GroupMember create(Member member, Group group, Position position, Long timetable_id) {
 
         GroupMember groupMember = new GroupMember();
         groupMember.setMember(member);
         groupMember.setGroup(group);
         groupMember.setPosition(position);
+        groupMember.setTimetable_id(timetable_id);
 
         return groupMember;
     }
@@ -55,4 +58,9 @@ public class GroupMember {
         this.group = group;
     }
 
+    public void setTimetable_id(Long id){this.timetable_id=id;}
+
+    public Long getTimetable_id() {
+        return timetable_id;
+    }
 }
