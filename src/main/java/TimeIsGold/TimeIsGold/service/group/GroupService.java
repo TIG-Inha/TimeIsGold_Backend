@@ -212,7 +212,7 @@ public class GroupService {
             if(schedule.getDayOfWeek()!=day){
                 continue;
             }
-            System.out.println("ok");
+            //System.out.println("ok");
 
             String s = stack.peek();
             String startTime=schedule.getStartTime();

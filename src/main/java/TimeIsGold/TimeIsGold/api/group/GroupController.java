@@ -207,13 +207,6 @@ public class GroupController {
         List<Long> timetableId=groupMemberRepository.findAllTimetableIdByGroup(group);
         List<Schedule> scheduleList=scheduleRepository.findAllByTableIdInOrderByStartTimeAsc(timetableId);
 
-        for(Long id:timetableId){
-            System.out.println(id);
-        }
-        for(Schedule schedule:scheduleList){
-            System.out.println(schedule.getStartTime());
-        }
-
         TimetableForm result = groupService.create(scheduleList);
         group.setCompSet(result);
         groupRepository.save(group);
