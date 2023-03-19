@@ -13,6 +13,9 @@ import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
 import TimeIsGold.TimeIsGold.domain.groupMember.GroupMemberRepository;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.domain.member.MemberRepository;
+import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
+import TimeIsGold.TimeIsGold.domain.schedule.ScheduleRepository;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
 import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
@@ -26,6 +29,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -38,13 +43,14 @@ public class GroupController {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
+    private final ScheduleRepository scheduleRepository;
 
 
     //SSE 연결
     @ApiOperation(value="group start", notes="Group을 생성하는 api, 여기서 group session 생성, 반드시 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/{groupName}", produces = "text/event-stream")
-    public SseEmitter start(@PathVariable("groupName") String groupName,
+    @GetMapping(value = "/{groupName}/{timetable_id}", produces = "text/event-stream")
+    public SseEmitter start(@PathVariable("groupName") String groupName, @PathVariable("timetable_id") Long timetable_id,
                              @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
                              HttpServletRequest request) {
 
@@ -73,7 +79,7 @@ public class GroupController {
             throw new LoginException("로그인 오류");
         }
 
-        GroupMember groupMember = GroupMember.create(member, group, Position.HOST);
+        GroupMember groupMember = GroupMember.create(member, group, Position.HOST, timetable_id);
         groupMemberRepository.save(groupMember);
 
 
@@ -118,8 +124,8 @@ public class GroupController {
 
     @ApiOperation(value="group participate", notes="Group을 참여하는 api, 반드시 group session과 login session이 있어야 함")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/participate/{otp}", produces = "text/event-stream")
-    public SseEmitter participate(@PathVariable("otp") String otp,
+    @GetMapping(value = "/participate/{otp}/{timetable_id}", produces = "text/event-stream")
+    public SseEmitter participate(@PathVariable("otp") String otp, @PathVariable("timetable_id") Long timetable_id,
                                   @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
                                   HttpServletRequest request){
         //사용자 정보 이름 불러오기
@@ -140,7 +146,7 @@ public class GroupController {
         session.setAttribute(SessionConstants.GROUP, group);
 
         //SSE 연결
-        SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId, group);
+        SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId, group, timetable_id);
 
         return emitter;
     }
@@ -188,4 +194,43 @@ public class GroupController {
 
         return ApiResponse.createSuccess(null);
     }
+
+
+    @ApiOperation(value="group 생성", notes="Group을 최종 생성하는 api, 반드시 group session과 login session이 있어야 함")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/create")
+    public ApiResponse create(HttpServletRequest request) {
+        HttpSession session=groupService.sessionValid(request);
+        Member member = groupService.memberValid(session);
+        Group group = groupService.groupValid(session);
+
+        List<Long> timetableId=groupMemberRepository.findAllTimetableIdByGroup(group);
+        List<Schedule> scheduleList=scheduleRepository.findAllByTableIdInOrderByStartTimeAsc(timetableId);
+
+        for(Long id:timetableId){
+            System.out.println(id);
+        }
+        for(Schedule schedule:scheduleList){
+            System.out.println(schedule.getStartTime());
+        }
+
+        TimetableForm result = groupService.create(scheduleList);
+        group.setCompSet(result);
+        groupRepository.save(group);
+
+        return ApiResponse.createSuccess(group.getId());
+    }
+
+    @ApiOperation(value="group 시간표 보기", notes="Group의 시간표를 보는 api")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/showTime/{groupId}")
+    public ApiResponse show(@PathVariable("groupId") Long id) {
+        Optional<Group> group = groupRepository.findById(id);
+        if(group.isEmpty()){
+            throw new GroupException("잘못된 그룹 id");
+        }
+
+        return ApiResponse.createSuccess(group.get().getCompSet());
+    }
+
 }

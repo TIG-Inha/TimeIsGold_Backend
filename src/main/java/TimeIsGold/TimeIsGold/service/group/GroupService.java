@@ -1,5 +1,6 @@
 package TimeIsGold.TimeIsGold.service.group;
 
+import TimeIsGold.TimeIsGold.api.login.SessionConstants;
 import TimeIsGold.TimeIsGold.domain.group.EmitterRepository;
 import TimeIsGold.TimeIsGold.domain.group.Group;
 import TimeIsGold.TimeIsGold.domain.group.GroupRepository;
@@ -8,16 +9,21 @@ import TimeIsGold.TimeIsGold.domain.groupMember.GroupMember;
 import TimeIsGold.TimeIsGold.domain.groupMember.GroupMemberRepository;
 import TimeIsGold.TimeIsGold.domain.member.Member;
 import TimeIsGold.TimeIsGold.domain.member.MemberRepository;
+import TimeIsGold.TimeIsGold.domain.schedule.DayOfWeek;
+import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
+import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 //import java.util.Random;
 
 @Service
@@ -103,7 +109,7 @@ public class GroupService {
         });
     }
 
-    public SseEmitter participate(Long id, String userId, String pw, String otp, String lastEventId, Group group){
+    public SseEmitter participate(Long id, String userId, String pw, String otp, String lastEventId, Group group, Long timetable_id){
 
 
         //참여자수+1 업데이트 하기
@@ -117,7 +123,7 @@ public class GroupService {
             throw new LoginException("로그인 오류");
         }
 
-        GroupMember groupMember = GroupMember.create(member, group, Position.PARTICIPANT);
+        GroupMember groupMember = GroupMember.create(member, group, Position.PARTICIPANT, timetable_id);
         groupMemberRepository.save(groupMember);
 
 
@@ -168,5 +174,109 @@ public class GroupService {
         else{
             throw new GroupException("그룹 멤버 없음");
         }
+    }
+
+    public TimetableForm create(List<Schedule> scheduleList){
+
+        String mon = findTimeOnDay(DayOfWeek.MON, scheduleList);
+        String tue = findTimeOnDay(DayOfWeek.TUE, scheduleList);
+        String wed = findTimeOnDay(DayOfWeek.WED, scheduleList);
+        String thu = findTimeOnDay(DayOfWeek.THU, scheduleList);
+        String fri = findTimeOnDay(DayOfWeek.FRI, scheduleList);
+        String sat = findTimeOnDay(DayOfWeek.SAT, scheduleList);
+        String sun = findTimeOnDay(DayOfWeek.SUN, scheduleList);
+
+        TimetableForm result=new TimetableForm();
+        result.setMon(mon);
+        result.setTue(tue);
+        result.setWed(wed);
+        result.setThu(thu);
+        result.setFri(fri);
+        result.setSat(sat);
+        result.setSun(sun);
+
+        return result;
+    }
+
+    public String findTimeOnDay(DayOfWeek day, List<Schedule> scheduleList) {
+        Stack<String> stack = new Stack<>();
+        String ans="";
+
+        stack.push("0000");
+
+        //1. stack >= start time일 경우, stack < endtime일 경우, stack을 endtime으로 바꾼다.
+        //2. stack < start time일 경우, string 값으로 저장한다. stack, start time 한다. stack의 값을 pop하고 end time을 push 한다.
+        //3. 맨 마지막에 2400으로 끝낸다.
+
+        for(Schedule schedule:scheduleList){
+            if(schedule.getDayOfWeek()!=day){
+                continue;
+            }
+            System.out.println("ok");
+
+            String s = stack.peek();
+            String startTime=schedule.getStartTime();
+            String endTime=schedule.getEndTime();
+
+            if(s.compareTo(startTime)>=0){
+                if(s.compareTo(endTime)<0){
+                    stack.pop();
+                    stack.push(endTime);
+                }
+            }
+            else{
+                ans=ans+s+"~"+startTime+"%";
+                stack.pop();
+                stack.push(endTime);
+            }
+        }
+
+        String s = stack.peek();
+        if(s.compareTo("2400")<0){
+            ans=ans+s+"~2400";
+            stack.pop();
+        }
+
+        return ans;
+    }
+
+    public HttpSession sessionValid(HttpServletRequest request){
+        HttpSession session=request.getSession(false);
+
+        if(session==null){
+            throw new SessionExpireException("세션이 만료되었습니다.");
+        }
+
+        return session;
+    }
+
+    public Member memberValid(HttpSession session){
+        Member m = (Member) session.getAttribute(SessionConstants.LOGIN_MEMBER);
+        if(m==null){
+            throw new SessionExpireException("세션이 만료되었습니다.");
+        }
+
+        Member member=memberRepository.findByUserIdAndPw(m.getUserId(), m.getPw());
+
+        if(member==null){
+            throw new SessionExpireException("멤버 오류");
+        }
+
+        return member;
+    }
+
+    public Group groupValid(HttpSession session){
+        Group group = (Group) session.getAttribute(SessionConstants.GROUP);
+        if(group==null){
+            throw new GroupException("그룹 세션 오류");
+        }
+
+        Group result = groupRepository.findByIdAndName(group.getId(), group.getName());
+
+        if(result==null){
+            throw new GroupException("알수없는 그룹");
+        }
+
+        return result;
     }
 }
