@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TimetableRepository extends JpaRepository<Timetable, Long> {
 
     Boolean existsByMemberAndName(Member member, String name);
+
+    Boolean existsByMemberAndId(Member member, Long id);
 }

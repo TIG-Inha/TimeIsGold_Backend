@@ -12,6 +12,7 @@ import TimeIsGold.TimeIsGold.domain.member.MemberRepository;
 import TimeIsGold.TimeIsGold.domain.schedule.DayOfWeek;
 import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
 import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableRepository;
 import TimeIsGold.TimeIsGold.exception.group.GroupException;
 import TimeIsGold.TimeIsGold.exception.group.SessionExpireException;
 import TimeIsGold.TimeIsGold.exception.login.LoginException;
@@ -39,6 +40,8 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     @Autowired
     private final MemberRepository memberRepository;
+    @Autowired
+    private final TimetableRepository timetableRepository;
 
     private String includeTime(Long groupId, Long userId){
         String id=groupId+"_"+userId+"_"+System.currentTimeMillis();
@@ -278,5 +281,13 @@ public class GroupService {
         }
 
         return result;
+    }
+
+    public void tableValid(Member member, Long tableId){
+        boolean check=timetableRepository.existsByMemberAndId(member,tableId);
+
+        if(!check){
+            throw new GroupException("유효하지 않은 table");
+        }
     }
 }
