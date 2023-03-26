@@ -117,6 +117,7 @@ public class GroupController {
         }
 
         String otp=group.changeOtp().getOtpCode();
+        groupRepository.save(group);
         GroupOtpResponseDto response = new GroupOtpResponseDto(otp);
 
         return ApiResponse.createSuccess(response);
