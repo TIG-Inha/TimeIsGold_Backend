@@ -6,6 +6,7 @@ import TimeIsGold.TimeIsGold.domain.schedule.DayOfWeek;
 import TimeIsGold.TimeIsGold.domain.schedule.Schedule;
 import TimeIsGold.TimeIsGold.domain.schedule.ScheduleRepository;
 import TimeIsGold.TimeIsGold.domain.timetable.Timetable;
+import TimeIsGold.TimeIsGold.domain.timetable.TimetableForm;
 import TimeIsGold.TimeIsGold.domain.timetable.TimetableRepository;
 import TimeIsGold.TimeIsGold.service.group.GroupService;
 import org.junit.jupiter.api.Assertions;
@@ -77,16 +78,23 @@ public class GroupServiceTest {
         scheduleList.add(schedule6);
 
 
-        HashMap<String, String> result = groupService.create(scheduleList);
-        HashMap<String, String> ans = new HashMap<>();
-        ans.put("Mon","0000~0900%0930~1300%1400~2400");
-        ans.put("Tue","0000~2400");
-        ans.put("Wed","0000~2400");
-        ans.put("Thu","0000~2400");
-        ans.put("Fri","0000~0900%1000~1100%1200~1300%1400~2400");
-        ans.put("Sat","0000~2400");
-        ans.put("Sun","0000~2400");
+        TimetableForm result = groupService.create(scheduleList);
+        TimetableForm ans = new TimetableForm();
 
-        Assertions.assertEquals(ans, result);
+        ans.setMon("0000~0900%0930~1300%1400~2400");
+        ans.setTue("0000~2400");
+        ans.setWed("0000~2400");
+        ans.setThu("0000~2400");
+        ans.setFri("0000~0900%1000~1100%1200~1300%1400~2400");
+        ans.setSat("0000~2400");
+        ans.setSun("0000~2400");
+
+        Assertions.assertEquals(ans.getMon(), result.getMon());
+        Assertions.assertEquals(ans.getTue(), result.getTue());
+        Assertions.assertEquals(ans.getWed(), result.getWed());
+        Assertions.assertEquals(ans.getThu(), result.getThu());
+        Assertions.assertEquals(ans.getFri(), result.getFri());
+        Assertions.assertEquals(ans.getSat(), result.getSat());
+        Assertions.assertEquals(ans.getSun(), result.getSun());
     }
 }

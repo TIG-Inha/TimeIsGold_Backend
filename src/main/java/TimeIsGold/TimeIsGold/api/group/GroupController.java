@@ -63,6 +63,15 @@ public class GroupController {
             throw new SessionExpireException("세션이 만료되었습니다.");
         }
 
+        //생성자 객체 찾아 그룹 멤버에 HOST 넣기
+        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
+        if(member==null){
+            throw new LoginException("로그인 오류");
+        }
+
+        //table_id가 있는지 검사
+        groupService.tableValid(member,timetable_id);
+
         //참여자 수 데이터에 저장
         Group group=Group.create(groupName, 1L);
         groupRepository.save(group);
@@ -71,13 +80,6 @@ public class GroupController {
         session.setAttribute(SessionConstants.GROUP, group);
         session.setMaxInactiveInterval(600);
 
-
-        //생성자 객체 찾아 그룹 멤버에 HOST 넣기
-        Member member=memberRepository.findByUserIdAndPw(loginMember.getUserId(), loginMember.getPw());
-
-        if(member==null){
-            throw new LoginException("로그인 오류");
-        }
 
         GroupMember groupMember = GroupMember.create(member, group, Position.HOST, timetable_id);
         groupMemberRepository.save(groupMember);
@@ -117,6 +119,7 @@ public class GroupController {
         }
 
         String otp=group.changeOtp().getOtpCode();
+        groupRepository.save(group);
         GroupOtpResponseDto response = new GroupOtpResponseDto(otp);
 
         return ApiResponse.createSuccess(response);
@@ -144,6 +147,9 @@ public class GroupController {
         }
 
         session.setAttribute(SessionConstants.GROUP, group);
+
+        //table_id가 있는지 검사
+        groupService.tableValid(loginMember,timetable_id);
 
         //SSE 연결
         SseEmitter emitter=groupService.participate(loginMember.getId(), loginMember.getUserId(), loginMember.getPw(),otp, lastEventId, group, timetable_id);
@@ -206,13 +212,6 @@ public class GroupController {
 
         List<Long> timetableId=groupMemberRepository.findAllTimetableIdByGroup(group);
         List<Schedule> scheduleList=scheduleRepository.findAllByTableIdInOrderByStartTimeAsc(timetableId);
-
-        for(Long id:timetableId){
-            System.out.println(id);
-        }
-        for(Schedule schedule:scheduleList){
-            System.out.println(schedule.getStartTime());
-        }
 
         TimetableForm result = groupService.create(scheduleList);
         group.setCompSet(result);
